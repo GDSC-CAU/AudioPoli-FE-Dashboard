@@ -38,17 +38,21 @@
   </script>
   <!-- This script adds the flutter initialization JS code -->
   <script src="flutter.js" defer></script>
-  <!-- GoogleMapAPI -->
-<!--  <script>-->
-<!--    function setGoogleMapsApiKey(apiKey) {-->
-<!--      const script = document.createElement('script');-->
-<!--      console.log(script);-->
-<!--      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;-->
-<!--      document.head.appendChild(script);-->
-<!--    }-->
-<!--  </script>-->
-  <script src="https://maps.googleapis.com/maps/api/js?key="></script>
 
+  <!-- GoogleMapAPI -->
+  <script>
+    function initMap() {
+      let map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 8,
+        center: {lat: -34.397, lng: 150.644}
+      });
+    }
+    function setGoogleMapsApiKey(apiKey) {
+      let script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
+      document.head.appendChild(script);
+    }
+  </script>
 </head>
 <body>
   <script>
