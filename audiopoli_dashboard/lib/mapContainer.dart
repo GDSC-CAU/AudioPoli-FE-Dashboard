@@ -28,7 +28,7 @@ class mapContainer extends StatelessWidget {
   late GoogleMapController mapController;
   GoogleMapsFlutterPlatform mapsImplementation = GoogleMapsFlutterPlatform.instance =  google_map_flutter.GoogleMapsPlugin();
 
-  final LatLng _center = const LatLng(45.521563, -122.677433);
+  final LatLng _center = const LatLng(37.5058, 126.956);
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -57,7 +57,7 @@ class mapContainer extends StatelessWidget {
               onMapCreated: _onMapCreated,
               initialCameraPosition: CameraPosition(
                 target: _center,
-                zoom: 11.0,
+                zoom: 17.0,
               ),
             );
           } else {
