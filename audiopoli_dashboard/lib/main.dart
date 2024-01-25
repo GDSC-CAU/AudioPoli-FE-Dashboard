@@ -68,14 +68,14 @@ class _MyAppState extends State<MyApp> {
         body: Column(
           children: [
             Expanded(
-              flex: 2,
+              flex: 3,
               child: Row(
                 children: [
                   Expanded(
                     child: Column(
                       children: [
                         Expanded(
-                          child: TimeDisplayContainer(socket: socket,)
+                          child: styledContainer()
                         ),
                         Expanded(
                           child: styledContainer(),
@@ -84,8 +84,17 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ),
                   Expanded(
-                    flex: 2,
-                    child: mapContainer(),
+                    flex: 3,
+                    child: Stack(
+                      children: [
+                        mapContainer(),
+                        Positioned(
+                          top: 10,
+                          right: 10,
+                          child: TimeDisplayContainer(socket: socket,)
+                        )
+                      ]
+                    ),
                   ),
                 ],
               ),
@@ -132,7 +141,7 @@ class TimeDisplayContainer extends StatefulWidget {
 }
 
 class _TimeDisplayContainerState extends State<TimeDisplayContainer> {
-  String _time = "ㅁㄴㅇㅁㄴㅇ";
+  String _time = "2024/01/25 12:34:56";
 
   @override
   void initState() {
@@ -147,11 +156,23 @@ class _TimeDisplayContainerState extends State<TimeDisplayContainer> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(1),
-      color: Colors.blueAccent,
+      margin: EdgeInsets.all(5.0),
+      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(100),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 1.5,
+            blurRadius: 1.5,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
       child: Text(
         _time,
-        style: TextStyle(fontSize: 24, color: Colors.white),
+        style: TextStyle(fontSize: 28, color: Colors.black, fontWeight: FontWeight.bold),
       ),
     );
   }

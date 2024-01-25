@@ -39,7 +39,8 @@ class _mapContainerState extends State<mapContainer> {
 
   final LatLng _center = const LatLng(37.5058, 126.956);
 
-  IncidentData sampleData = IncidentData(
+  //그저 샘플 데이터. incidentData.dart에서 받아와야함 실제 서버에서 받을 땐
+  IncidentData sampleData0 = IncidentData(
       date: "2012-01-26",
       time: "13:51:50",
       latitude: 37.5058,
@@ -50,11 +51,23 @@ class _mapContainerState extends State<mapContainer> {
       isCrime: true
   );
 
+  IncidentData sampleData1 = IncidentData(
+      date: "2012-01-26",
+      time: "13:51:50",
+      latitude: 37.5068,
+      longitude: 126.957,
+      sound: "대충 base64",
+      category: 3,
+      detail: 3,
+      isCrime: true
+  );
+
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
 
   Set<Marker> markers = {};
+  List<IncidentData> incidentDatas = [];
 
   @override
   void initState() {
@@ -63,7 +76,13 @@ class _mapContainerState extends State<mapContainer> {
     //   var incidentData = IncidentData.fromJson(json.decode(data));
     //   _addMarker(incidentData);
     // });
-    _addMarker(sampleData);
+    incidentDatas.add(sampleData0);
+    incidentDatas.add(sampleData1);
+    setState(() {
+      for(int i = 0; i < incidentDatas.length; i++){
+        _addMarker(incidentDatas[i]);
+      }
+    });
   }
 
   void _addMarker(IncidentData incidentData) {
