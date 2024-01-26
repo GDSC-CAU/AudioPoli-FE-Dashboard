@@ -1,7 +1,9 @@
+import 'package:audiopoli_dashboard/LogContainer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import './mapContainer.dart';
+import './LogContainer.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 void main() async {
@@ -99,9 +101,7 @@ class _MyAppState extends State<MyApp> {
                 ],
               ),
             ),
-            Expanded(
-              child: styledContainer(),
-            ),
+            LogContainer(socket: socket)
           ],
         ),
       ),
