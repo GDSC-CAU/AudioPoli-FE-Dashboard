@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:sticky_headers/sticky_headers.dart';
 
 import 'incidentData.dart';
 
@@ -49,13 +50,20 @@ class _LogContainerState extends State<LogContainer> {
     incidentDatas.add(sampleData1);
     incidentDatas.add(sampleData0);
     incidentDatas.add(sampleData1);
+    incidentDatas.add(sampleData0);
+    incidentDatas.add(sampleData1);
+    incidentDatas.add(sampleData0);
+    incidentDatas.add(sampleData1);
+    incidentDatas.add(sampleData0);
+    incidentDatas.add(sampleData1);
   }
   @override
   Widget build(BuildContext context) {
     return Container(
+      clipBehavior: Clip.hardEdge,
       margin: EdgeInsets.all(7.0),
-      height: 200,
       width: double.infinity,
+      height: 200,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
@@ -70,29 +78,72 @@ class _LogContainerState extends State<LogContainer> {
       ),
       child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
-        child: DataTable(
-          columns: [
-          DataColumn(label: Text('Date')),
-          DataColumn(label: Text('Time')),
-          DataColumn(label: Text('Latitude')),
-          DataColumn(label: Text('Longitude')),
-          DataColumn(label: Text('Sound')),
-          DataColumn(label: Text('Category')),
-          DataColumn(label: Text('Detail')),
-          DataColumn(label: Text('Is Crime?')),
-          ],
-          rows: incidentDatas.map((incident) {
-          return DataRow(cells: [
-          DataCell(Text(incident.date)),
-          DataCell(Text(incident.time)),
-          DataCell(Text(incident.latitude.toString())),
-          DataCell(Text(incident.longitude.toString())),
-          DataCell(Text(incident.sound)), // You might want to create a widget to play the sound
-          DataCell(Text(incident.category.toString())),
-          DataCell(Text(incident.detail.toString())),
-          DataCell(Text(incident.isCrime ? 'Yes' : 'No')),
-          ]);
-          }).toList(),
+        child: StickyHeader(
+          header: Container(
+            color: Colors.white,
+            width: double.infinity,
+            child: DataTable(
+              border: TableBorder(
+                verticalInside: BorderSide(width: 0.5, color: Colors.grey),
+              ),
+              headingRowHeight: 20,
+              headingTextStyle: TextStyle(
+                fontWeight: FontWeight.bold
+              ),
+              columnSpacing: 20,
+
+              columns: [
+                DataColumn(label: Container(width: 100, child: Text('Date'))),
+                DataColumn(label: Container(width: 100, child: Text('Time'))),
+                DataColumn(label: Container(width: 100, child: Text('Latitude'))),
+                DataColumn(label: Container(width: 100, child: Text('Longitude'))),
+                DataColumn(label: Container(width: 100, child: Text('Sound'))),
+                DataColumn(label: Container(width: 60, child: Text('Category'))),
+                DataColumn(label: Container(width: 50, child: Text('Detail'))),
+                DataColumn(label: Container(width: 100, child: Text('Is Crime?'))),
+                DataColumn(label: Container(width: 300, child: Text('Bigo'))),
+              ],
+              rows: [],
+            ),
+          ),
+          content: Container(
+            width: double.infinity,
+            child: DataTable(
+              border: TableBorder.all(
+                width: 0.5,
+                color: Colors.grey,
+              ),
+              columnSpacing: 20,
+              headingRowHeight: 0,
+              dataRowMinHeight: 24,
+              dataRowMaxHeight: 24,
+              columns: [
+                DataColumn(label: Container(width: 100,)),
+                DataColumn(label: Container(width: 100,)),
+                DataColumn(label: Container(width: 100,)),
+                DataColumn(label: Container(width: 100,)),
+                DataColumn(label: Container(width: 100,)),
+                DataColumn(label: Container(width: 60,)),
+                DataColumn(label: Container(width: 50,)),
+                DataColumn(label: Container(width: 100,)),
+                DataColumn(label: Container(width: 300,)),
+              ],
+              rows: incidentDatas.map((incident) {
+                return DataRow(cells: [
+                    DataCell(Text(incident.date)),
+                    DataCell(Text(incident.time)),
+                    DataCell(Text(incident.latitude.toString())),
+                    DataCell(Text(incident.longitude.toString())),
+                    DataCell(Text(incident.sound)), // You might want to create a widget to play the sound
+                    DataCell(Text(incident.category.toString())),
+                    DataCell(Text(incident.detail.toString())),
+                    DataCell(Text(incident.isCrime ? 'Yes' : 'No')),
+                    DataCell(Text('')),
+                  ]
+                );
+              }).toList(),
+            ),
+          ),
         ),
       ),
     );
