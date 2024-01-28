@@ -36,7 +36,6 @@ class _LogContainerState extends State<LogContainer> {
   List<IncidentData> incidentDatas = [];
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     incidentDatas.add(sampleData0);
     incidentDatas.add(sampleData1);
@@ -82,7 +81,8 @@ class _LogContainerState extends State<LogContainer> {
               ),
               headingRowHeight: 20,
               headingTextStyle: TextStyle(
-                fontWeight: FontWeight.bold
+                fontWeight: FontWeight.bold,
+                fontSize: 12.0
               ),
               columnSpacing: 20,
 
@@ -94,7 +94,7 @@ class _LogContainerState extends State<LogContainer> {
                 DataColumn(label: Container(width: 100, child: Text('Sound'))),
                 DataColumn(label: Container(width: 60, child: Text('Category'))),
                 DataColumn(label: Container(width: 50, child: Text('Detail'))),
-                DataColumn(label: Container(width: 100, child: Text('Is Crime?'))),
+                DataColumn(label: Container(width: 100, child: Text('Is Crime'))),
                 DataColumn(label: Container(width: 300, child: Text('Bigo'))),
               ],
               rows: [],
