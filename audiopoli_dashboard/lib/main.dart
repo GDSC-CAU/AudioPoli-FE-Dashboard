@@ -1,10 +1,13 @@
 import 'package:audiopoli_dashboard/LogContainer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/intl.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import './mapContainer.dart';
 import './LogContainer.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:intl/intl.dart';
+import './TimeContainer.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -93,7 +96,7 @@ class _MyAppState extends State<MyApp> {
                         Positioned(
                           top: 10,
                           right: 10,
-                          child: TimeDisplayContainer(socket: socket,)
+                          child: TimeContainer()
                         )
                       ]
                     ),
@@ -127,52 +130,6 @@ class styledContainer extends StatelessWidget {
             offset: Offset(0, 3),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class TimeDisplayContainer extends StatefulWidget {
-  late IO.Socket socket;
-  TimeDisplayContainer({Key? key, required this.socket}) : super(key: key);
-
-  @override
-  _TimeDisplayContainerState createState() => _TimeDisplayContainerState();
-}
-
-class _TimeDisplayContainerState extends State<TimeDisplayContainer> {
-  String _time = "2024/01/25 12:34:56";
-
-  @override
-  void initState() {
-    super.initState();
-    widget.socket.on('time', (data) {
-      setState(() {
-        _time = data['time'];
-      });
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(5.0),
-      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(100),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 1.5,
-            blurRadius: 1.5,
-            offset: Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Text(
-        _time,
-        style: TextStyle(fontSize: 28, color: Colors.black, fontWeight: FontWeight.bold),
       ),
     );
   }
