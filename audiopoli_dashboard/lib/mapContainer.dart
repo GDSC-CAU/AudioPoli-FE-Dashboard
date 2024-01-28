@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:js' as js;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +47,8 @@ class _mapContainerState extends State<mapContainer> {
       sound: "대충 base64",
       category: 5,
       detail: 3,
-      isCrime: true
+      isCrime: true,
+      id: 1
   );
 
   IncidentData sampleData1 = IncidentData(
@@ -59,7 +59,8 @@ class _mapContainerState extends State<mapContainer> {
       sound: "대충 base64",
       category: 3,
       detail: 3,
-      isCrime: true
+      isCrime: true,
+      id: 1
   );
 
   void _onMapCreated(GoogleMapController controller) {

@@ -1,17 +1,9 @@
-
-
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:sticky_headers/sticky_headers.dart';
-
 import 'incidentData.dart';
 
-import 'package:socket_io_client/socket_io_client.dart' as IO;
-
 class LogContainer extends StatefulWidget {
-  late IO.Socket socket;
-  LogContainer({super.key, required this.socket});
+  LogContainer({super.key});
 
   @override
   State<LogContainer> createState() => _LogContainerState();
@@ -26,7 +18,8 @@ class _LogContainerState extends State<LogContainer> {
       sound: "대충 base64",
       category: 5,
       detail: 3,
-      isCrime: true
+      isCrime: true,
+      id: 3
   );
   IncidentData sampleData1 = IncidentData(
       date: "2012-01-26",
@@ -36,7 +29,8 @@ class _LogContainerState extends State<LogContainer> {
       sound: "대충 base64",
       category: 3,
       detail: 3,
-      isCrime: true
+      isCrime: true,
+      id: 1
   );
 
   List<IncidentData> incidentDatas = [];
@@ -108,40 +102,59 @@ class _LogContainerState extends State<LogContainer> {
           ),
           content: Container(
             width: double.infinity,
-            child: DataTable(
-              border: TableBorder.all(
-                width: 0.5,
-                color: Colors.grey,
+            child: Theme(
+              data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+              child: DataTable(
+                border: TableBorder(
+                  verticalInside: BorderSide(
+                    width: 0.5,
+                    color: Colors.grey
+                  ),
+                  horizontalInside: BorderSide(
+                    color: Colors.transparent,
+                    style: BorderStyle.solid
+                  )
+                ),
+                columnSpacing: 20,
+                headingRowHeight: 0,
+                dataRowMinHeight: 24,
+                dataRowMaxHeight: 24,
+                columns: [
+                  DataColumn(label: Container(width: 100,)),
+                  DataColumn(label: Container(width: 100,)),
+                  DataColumn(label: Container(width: 100,)),
+                  DataColumn(label: Container(width: 100,)),
+                  DataColumn(label: Container(width: 100,)),
+                  DataColumn(label: Container(width: 60,)),
+                  DataColumn(label: Container(width: 50,)),
+                  DataColumn(label: Container(width: 100,)),
+                  DataColumn(label: Container(width: 300,)),
+                ],
+                rows: List<DataRow>.generate(
+                  incidentDatas.length,
+                      (index) {
+                    return DataRow(
+                      color: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+                        if (index % 2 != 0) {
+                          return Colors.grey.withOpacity(0.3);
+                        }
+                        return null;
+                      }),
+                      cells: [
+                        DataCell(Text(incidentDatas[index].date)),
+                        DataCell(Text(incidentDatas[index].time)),
+                        DataCell(Text(incidentDatas[index].latitude.toString())),
+                        DataCell(Text(incidentDatas[index].longitude.toString())),
+                        DataCell(Text(incidentDatas[index].sound)),
+                        DataCell(Text(incidentDatas[index].category.toString())),
+                        DataCell(Text(incidentDatas[index].detail.toString())),
+                        DataCell(Text(incidentDatas[index].isCrime ? 'Yes' : 'No')),
+                        DataCell(Text(''))
+                      ],
+                    );
+                  },
+                ),
               ),
-              columnSpacing: 20,
-              headingRowHeight: 0,
-              dataRowMinHeight: 24,
-              dataRowMaxHeight: 24,
-              columns: [
-                DataColumn(label: Container(width: 100,)),
-                DataColumn(label: Container(width: 100,)),
-                DataColumn(label: Container(width: 100,)),
-                DataColumn(label: Container(width: 100,)),
-                DataColumn(label: Container(width: 100,)),
-                DataColumn(label: Container(width: 60,)),
-                DataColumn(label: Container(width: 50,)),
-                DataColumn(label: Container(width: 100,)),
-                DataColumn(label: Container(width: 300,)),
-              ],
-              rows: incidentDatas.map((incident) {
-                return DataRow(cells: [
-                    DataCell(Text(incident.date)),
-                    DataCell(Text(incident.time)),
-                    DataCell(Text(incident.latitude.toString())),
-                    DataCell(Text(incident.longitude.toString())),
-                    DataCell(Text(incident.sound)), // You might want to create a widget to play the sound
-                    DataCell(Text(incident.category.toString())),
-                    DataCell(Text(incident.detail.toString())),
-                    DataCell(Text(incident.isCrime ? 'Yes' : 'No')),
-                    DataCell(Text('')),
-                  ]
-                );
-              }).toList(),
             ),
           ),
         ),
