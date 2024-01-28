@@ -82,7 +82,7 @@ class _LogContainerState extends State<LogContainer> {
               headingRowHeight: 20,
               headingTextStyle: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 14.0
+                fontSize: 12.0
               ),
               columnSpacing: 20,
 
@@ -94,7 +94,7 @@ class _LogContainerState extends State<LogContainer> {
                 DataColumn(label: Container(width: 100, child: Text('Sound'))),
                 DataColumn(label: Container(width: 60, child: Text('Category'))),
                 DataColumn(label: Container(width: 50, child: Text('Detail'))),
-                DataColumn(label: Container(width: 100, child: Text('Is Crime?'))),
+                DataColumn(label: Container(width: 100, child: Text('Is Crime'))),
                 DataColumn(label: Container(width: 300, child: Text('Bigo'))),
               ],
               rows: [],
