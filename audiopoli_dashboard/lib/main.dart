@@ -56,7 +56,7 @@ class _MyAppState extends State<MyApp> {
   final ref = FirebaseDatabase.instance.ref('/');
   var logMap = new Map<String, dynamic>();
   var yesterdayCrime = new List<int>.filled(7, 0);
-  var yesterdayTime = new List<int>.filled(23,0);
+  var yesterdayTime = new List<int>.filled(24,0);
 
   @override
   void initState() {
