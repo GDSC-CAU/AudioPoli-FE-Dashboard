@@ -29,7 +29,8 @@ class IncidentData {
   final int category;
   final int detail;
   final int id;
-  final bool isCrime;
+  late final bool isCrime;
+
 
   IncidentData({
     required this.date,
@@ -55,5 +56,19 @@ class IncidentData {
       isCrime: json['isCrime'],
       id: json['id']
     );
+  }
+
+  Map<dynamic, dynamic> toMap() {
+    return {
+      "date": date,
+      "time": time,
+      "latitude": latitude,
+      "longitude": longitude,
+      "sound": sound,
+      "category": category,
+      "detail": detail,
+      "isCrime": isCrime,
+      "id": id
+    };
   }
 }

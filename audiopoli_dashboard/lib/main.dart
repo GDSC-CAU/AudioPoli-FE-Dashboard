@@ -14,18 +14,7 @@ import 'package:intl/intl.dart';
 var now = DateTime.now();
 // "date": DateFormat('yyyy-MM-dd').format(now),
 
-var sampleData = {
-  "id": 1245,
-  "date": DateFormat('yyyy-MM-dd').format(now),
-  // "date" : "2024-01-28",
-  "time": DateFormat('kk:mm:ss').format(now),
-  "latitude": 37.5058,
-  "longitude": 126.956,
-  "sound": "대충 base64",
-  "category": 1,
-  "detail": 5,
-  "isCrime": true
-};
+IncidentData sampleData = IncidentData(date: DateFormat('yyyy-MM-dd').format(now), time: DateFormat('kk:mm:ss').format(now), latitude: 37.5058, longitude: 126.956, sound: "대충 base64", category: 1, detail: 5, isCrime: false, id: 99999);
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -52,6 +41,18 @@ bool compareDate(String date) {
   else { return false; }
 }
 
+void updateIsCrime(IncidentData data, bool TF) {
+  final ref = FirebaseDatabase.instance.ref("/${data.id.toString()}");
+
+  ref.update({"isCrime": TF})
+      .then((_) {
+    print('success!');
+  })
+      .catchError((error) {
+    print(error);
+  });
+}
+
 class _MyAppState extends State<MyApp> {
   final ref = FirebaseDatabase.instance.ref('/');
   var logMap = new Map<String, dynamic>();
@@ -62,17 +63,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    // final Map<String, Map> updates = {};
-    // updates[sampleData["id"].toString()] = sampleData as Map;
-    // ref.update(updates)
-    //     .then((_) {
-    //   print('success!');
-    //   // Data saved successfully!
-    // })
-    //     .catchError((error) {
-    //   print(error);
-    //   // The write failed...
-    // });
+    // updateIsCrime(sampleData, true);
 
     ref.onValue.listen((DatabaseEvent event) {
 
