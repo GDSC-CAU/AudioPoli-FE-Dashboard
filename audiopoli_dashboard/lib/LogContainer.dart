@@ -3,53 +3,41 @@ import 'package:sticky_headers/sticky_headers.dart';
 import 'incidentData.dart';
 
 class LogContainer extends StatefulWidget {
-  LogContainer({super.key});
-
+  LogContainer({super.key, required this.logMap});
+  Map<String, dynamic> logMap;
   @override
   State<LogContainer> createState() => _LogContainerState();
 }
 
 class _LogContainerState extends State<LogContainer> {
-  IncidentData sampleData0 = IncidentData(
-      date: "2012-01-26",
-      time: "13:51:50",
-      latitude: 37.5058,
-      longitude: 126.956,
-      sound: "대충 base64",
-      category: 5,
-      detail: 3,
-      isCrime: true,
-      id: 3
-  );
-  IncidentData sampleData1 = IncidentData(
-      date: "2012-01-26",
-      time: "13:51:50",
-      latitude: 37.5068,
-      longitude: 126.957,
-      sound: "대충 base64",
-      category: 3,
-      detail: 3,
-      isCrime: true,
-      id: 1
-  );
-
-  List<IncidentData> incidentDatas = [];
+  var incidentDatas = new Map<String, dynamic>();
   @override
   void initState() {
     super.initState();
-    incidentDatas.add(sampleData0);
-    incidentDatas.add(sampleData1);
-    incidentDatas.add(sampleData0);
-    incidentDatas.add(sampleData1);
-    incidentDatas.add(sampleData0);
-    incidentDatas.add(sampleData1);
-    incidentDatas.add(sampleData0);
-    incidentDatas.add(sampleData1);
-    incidentDatas.add(sampleData0);
-    incidentDatas.add(sampleData1);
-    incidentDatas.add(sampleData0);
-    incidentDatas.add(sampleData1);
+    setState(() {
+      updateDatas();
+    });
   }
+
+  void updateDatas() {
+    print('update진행중중중중주');
+    print(widget.logMap.length);
+    widget.logMap.forEach((key, value) {
+      IncidentData incident = IncidentData(
+          date: value.date,
+          time: value.time,
+          latitude: value.latitude,
+          longitude: value.longitude,
+          sound: value.sound,
+          category: value.category,
+          detail: value.detail,
+          id: value.id,
+          isCrime: value.isCrime
+      );
+      incidentDatas[key] = incident;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -130,30 +118,27 @@ class _LogContainerState extends State<LogContainer> {
                   DataColumn(label: Container(width: 100,)),
                   DataColumn(label: Container(width: 300,)),
                 ],
-                rows: List<DataRow>.generate(
-                  incidentDatas.length,
-                      (index) {
-                    return DataRow(
-                      color: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
-                        if (index % 2 != 0) {
-                          return Colors.grey.withOpacity(0.3);
-                        }
-                        return null;
-                      }),
-                      cells: [
-                        DataCell(Text(incidentDatas[index].date)),
-                        DataCell(Text(incidentDatas[index].time)),
-                        DataCell(Text(incidentDatas[index].latitude.toString())),
-                        DataCell(Text(incidentDatas[index].longitude.toString())),
-                        DataCell(Text(incidentDatas[index].sound)),
-                        DataCell(Text(incidentDatas[index].category.toString())),
-                        DataCell(Text(incidentDatas[index].detail.toString())),
-                        DataCell(Text(incidentDatas[index].isCrime ? 'Yes' : 'No')),
-                        DataCell(Text(''))
-                      ],
-                    );
-                  },
-                ),
+                rows: incidentDatas.entries.map((entry) {
+                  return DataRow(
+                    color: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+                      if (incidentDatas.keys.toList().indexOf(entry.key) % 2 != 0) {
+                        return Colors.grey.withOpacity(0.3);
+                      }
+                      return null;
+                    }),
+                    cells: [
+                      DataCell(Text(entry.value.date ?? '')),
+                      DataCell(Text(entry.value.time ?? '')),
+                      DataCell(Text(entry.value.latitude .toString() ?? '')),
+                      DataCell(Text(entry.value.longitude.toString() ?? '')),
+                      DataCell(Text(entry.value.sound ?? '')),
+                      DataCell(Text(entry.value.category.toString() ?? '')),
+                      DataCell(Text(entry.value.detail.toString() ?? '')),
+                      DataCell(Text(entry.value.isCrime == true ? 'Yes' : 'No')),
+                      DataCell(Text('')),
+                    ],
+                  );
+                }).toList(),
               ),
             ),
           ),

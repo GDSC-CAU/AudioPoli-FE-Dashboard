@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:audiopoli_dashboard/LogContainer.dart';
 import 'package:audiopoli_dashboard/incidentData.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -18,7 +20,7 @@ IncidentData sampleData = IncidentData(date: DateFormat('yyyy-MM-dd').format(now
 
 void main() async {
   await dotenv.load(fileName: ".env");
-  await Firebase.initializeApp(  options: DefaultFirebaseOptions.currentPlatform,);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
   runApp(MyApp());
 }
 
@@ -66,27 +68,44 @@ class _MyAppState extends State<MyApp> {
     // updateIsCrime(sampleData, true);
 
     ref.onValue.listen((DatabaseEvent event) {
-
-      DataSnapshot snapshot = event.snapshot;
-
-      if(snapshot.exists)
-      {
-        var data = snapshot.value;
-        if(data is Map) {
-          data.forEach((key, value) {
-            IncidentData incident = IncidentData(date: value['date'], time: value['time'], latitude: value['latitude'], longitude: value['longitude'], sound: value['sound'], category: value['category'], detail: value['detail'], id: value['id'], isCrime: value['isCrime']);
-            logMap[key] = incident;
-            if(compareDate(value['date'])) {
-              yesterdayCrime[incident.category]++;
-              yesterdayTime[int.parse(incident.time.split(":")[0])]++;
-            }
-
-          });
-        }
-      } else {
-        print('No data available');
-      }
+      loadDataFromDB(event);
     });
+  }
+
+  void loadDataFromDB(DatabaseEvent event) async {
+    DataSnapshot snapshot = event.snapshot;
+    if(snapshot.exists)
+    {
+      var data = snapshot.value;
+      if(data is Map) {
+        data.forEach((key, value) {
+          IncidentData incident = IncidentData(
+              date: value['date'],
+              time: value['time'],
+              latitude: value['latitude'],
+              longitude: value['longitude'],
+              sound: value['sound'],
+              category: value['category'],
+              detail: value['detail'],
+              id: value['id'],
+              isCrime: value['isCrime']
+          );
+          logMap[key] = incident;
+          if(compareDate(value['date'])) {
+            yesterdayCrime[incident.category]++;
+            yesterdayTime[int.parse(incident.time.split(":")[0])]++;
+          }
+        });
+      }
+      print(logMap.length);
+    } else {
+      print('No data available');
+    }
+  }
+
+  Future<void> fetchData() async {
+    DatabaseEvent event = await ref.once();
+    loadDataFromDB(event);
   }
 
 
@@ -128,7 +147,16 @@ class _MyAppState extends State<MyApp> {
                 ],
               ),
             ),
-            LogContainer()
+            FutureBuilder(
+              future: fetchData(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return LogContainer(logMap: logMap,);
+                } else {
+                  return CircularProgressIndicator();
+                }
+              },
+            )
           ],
         ),
       ),
