@@ -92,7 +92,9 @@ void sendDataToDB() {
       category: 1,
       detail: 1,
       isCrime: true,
-      id: Random().nextInt(10000)
+      id: Random().nextInt(10000),
+      departureTime: "00:00:00",
+      caseEndTime: "11:11:11"
   );
   final ref = FirebaseDatabase.instance.ref('/');
   final Map<String, Map> updates = {};
@@ -120,8 +122,8 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     // updateIsCrime(sampleData, true);
-    updateDepartureTime(sampleData, "23:40");
-    updateCaseEndTime(sampleData, "2:20");
+    // updateDepartureTime(sampleData, "23:40");
+    // updateCaseEndTime(sampleData, "2:20");
     ref.onValue.listen((DatabaseEvent event) {
       loadDataFromDB(event);
       print('Data reload');
