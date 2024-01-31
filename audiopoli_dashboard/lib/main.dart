@@ -16,7 +16,7 @@ import 'package:intl/intl.dart';
 var now = DateTime.now();
 // "date": DateFormat('yyyy-MM-dd').format(now),
 
-IncidentData sampleData = IncidentData(date: DateFormat('yyyy-MM-dd').format(now), time: DateFormat('kk:mm:ss').format(now), latitude: 37.5058, longitude: 126.956, sound: "대충 base64", category: 1, detail: 5, isCrime: false, id: 99999);
+IncidentData sampleData = IncidentData(date: DateFormat('yyyy-MM-dd').format(now), time: DateFormat('kk:mm:ss').format(now), latitude: 37.5058, longitude: 126.956, sound: "대충 base64", category: 1, detail: 5, isCrime: false, id: 35, departureTime: "", caseEndTime: "");
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -43,6 +43,32 @@ bool compareDate(String date) {
   else { return false; }
 }
 
+void updateDepartureTime(IncidentData data, String time)
+{
+  final ref = FirebaseDatabase.instance.ref("/${data.id.toString()}");
+
+  ref.update({"departureTime": time})
+      .then((_) {
+    print('success!');
+  })
+      .catchError((error) {
+    print(error);
+  });
+}
+
+void updateCaseEndTime(IncidentData data, String time)
+{
+  final ref = FirebaseDatabase.instance.ref("/${data.id.toString()}");
+
+  ref.update({"caseEndTime": time})
+      .then((_) {
+    print('success!');
+  })
+      .catchError((error) {
+    print(error);
+  });
+}
+
 void updateIsCrime(IncidentData data, bool TF) {
   final ref = FirebaseDatabase.instance.ref("/${data.id.toString()}");
 
@@ -66,6 +92,8 @@ class _MyAppState extends State<MyApp> {
     super.initState();
 
     // updateIsCrime(sampleData, true);
+    updateDepartureTime(sampleData, "23:40");
+    updateCaseEndTime(sampleData, "2:20");
 
     ref.onValue.listen((DatabaseEvent event) {
       loadDataFromDB(event);
@@ -88,7 +116,9 @@ class _MyAppState extends State<MyApp> {
               category: value['category'],
               detail: value['detail'],
               id: value['id'],
-              isCrime: value['isCrime']
+              isCrime: value['isCrime'],
+              departureTime: value['departureTime'],
+              caseEndTime: value['caseEndTime']
           );
           logMap[key] = incident;
           if(compareDate(value['date'])) {
@@ -97,7 +127,7 @@ class _MyAppState extends State<MyApp> {
           }
         });
       }
-      print(logMap.length);
+      print(logMap);
     } else {
       print('No data available');
     }
