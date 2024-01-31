@@ -8,7 +8,9 @@ Future<IncidentData> fetchIncidentData() async {
       category: 5,
       detail: 3,
       isCrime: true,
-      id: 1
+      id: 1,
+      departureTime: "",
+      caseEndTime: "",
   );
   // final response = await http.get(Uri.parse('https://your-server.com/incidents'));
   //
@@ -30,6 +32,8 @@ class IncidentData {
   final int detail;
   final int id;
   late final bool isCrime;
+  late final String departureTime;
+  late final String caseEndTime;
 
 
   IncidentData({
@@ -41,7 +45,9 @@ class IncidentData {
     required this.category,
     required this.detail,
     required this.isCrime,
-    required this.id
+    required this.id,
+    required this.departureTime,
+    required this.caseEndTime
   });
 
   factory IncidentData.fromJson(Map<String, dynamic> json) {
@@ -54,7 +60,9 @@ class IncidentData {
       category: json['category'],
       detail: json['detail'],
       isCrime: json['isCrime'],
-      id: json['id']
+      id: json['id'],
+      departureTime: json['departureTime'],
+      caseEndTime: json['caseEndTime']
     );
   }
 
@@ -68,7 +76,9 @@ class IncidentData {
       "category": category,
       "detail": detail,
       "isCrime": isCrime,
-      "id": id
+      "id": id,
+      "departureTime": departureTime,
+      "caseEndTime": caseEndTime
     };
   }
 }

@@ -32,7 +32,9 @@ class _LogContainerState extends State<LogContainer> {
           category: value.category,
           detail: value.detail,
           id: value.id,
-          isCrime: value.isCrime
+          isCrime: value.isCrime,
+          departureTime: value.departureTime,
+          caseEndTime: value.caseEndTime
       );
       incidentDatas[key] = incident;
     });

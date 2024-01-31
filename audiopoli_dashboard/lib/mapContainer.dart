@@ -48,7 +48,9 @@ class _mapContainerState extends State<mapContainer> {
       category: 5,
       detail: 3,
       isCrime: true,
-      id: 1
+      id: 1,
+      departureTime: "",
+      caseEndTime: "",
   );
 
   IncidentData sampleData1 = IncidentData(
@@ -60,7 +62,9 @@ class _mapContainerState extends State<mapContainer> {
       category: 3,
       detail: 3,
       isCrime: true,
-      id: 1
+      id: 1,
+      departureTime: "",
+      caseEndTime: "",
   );
 
   void _onMapCreated(GoogleMapController controller) {
