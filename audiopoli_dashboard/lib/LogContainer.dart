@@ -19,24 +19,32 @@ class _LogContainerState extends State<LogContainer> {
     });
   }
 
+  @override
+  void didUpdateWidget(LogContainer oldWidget) {
+
+    print('Update LogContainer Widget');
+    super.didUpdateWidget(oldWidget);
+    updateDatas();
+  }
+
+
   void updateDatas() {
-    print('update진행중중중중주');
-    print(widget.logMap.length);
-    widget.logMap.forEach((key, value) {
-      IncidentData incident = IncidentData(
-          date: value.date,
-          time: value.time,
-          latitude: value.latitude,
-          longitude: value.longitude,
-          sound: value.sound,
-          category: value.category,
-          detail: value.detail,
-          id: value.id,
-          isCrime: value.isCrime,
-          departureTime: value.departureTime,
-          caseEndTime: value.caseEndTime
-      );
-      incidentDatas[key] = incident;
+    setState(() {
+      incidentDatas.clear();
+      widget.logMap.forEach((key, value) {
+        IncidentData incident = IncidentData(
+            date: value.date,
+            time: value.time,
+            latitude: value.latitude,
+            longitude: value.longitude,
+            sound: value.sound,
+            category: value.category,
+            detail: value.detail,
+            id: value.id,
+            isCrime: value.isCrime
+        );
+        incidentDatas[key] = incident;
+      });
     });
   }
 
@@ -137,7 +145,7 @@ class _LogContainerState extends State<LogContainer> {
                       DataCell(Text(entry.value.category.toString() ?? '')),
                       DataCell(Text(entry.value.detail.toString() ?? '')),
                       DataCell(Text(entry.value.isCrime == true ? 'Yes' : 'No')),
-                      DataCell(Text('')),
+                      DataCell(Text(entry.key.toString())), //임시로 데이터 key값 출력
                     ],
                   );
                 }).toList(),

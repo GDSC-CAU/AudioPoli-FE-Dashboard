@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:audiopoli_dashboard/LogContainer.dart';
@@ -81,22 +82,49 @@ void updateIsCrime(IncidentData data, bool TF) {
   });
 }
 
+void sendDataToDB() {
+  IncidentData sampleData = IncidentData(
+      date: "2023-01-31",
+      time: "15:17:50",
+      latitude: 38.5058,
+      longitude: 120.956,
+      sound: "대충 base64",
+      category: 1,
+      detail: 1,
+      isCrime: true,
+      id: Random().nextInt(10000)
+  );
+  final ref = FirebaseDatabase.instance.ref('/');
+  final Map<String, Map> updates = {};
+  updates[sampleData.id.toString()] = sampleData.toMap();
+  ref.update(updates)
+      .then((_) {
+    print('success!');
+    // Data saved successfully!
+  })
+      .catchError((error) {
+    print(error);
+    // The write failed…
+  });
+}
+
 class _MyAppState extends State<MyApp> {
   final ref = FirebaseDatabase.instance.ref('/');
   var logMap = new Map<String, dynamic>();
   var yesterdayCrime = new List<int>.filled(7, 0);
   var yesterdayTime = new List<int>.filled(24,0);
+  final StreamController<Map<String, dynamic>> _logMapController = StreamController.broadcast();
+
 
   @override
   void initState() {
     super.initState();
-
     // updateIsCrime(sampleData, true);
     updateDepartureTime(sampleData, "23:40");
     updateCaseEndTime(sampleData, "2:20");
-
     ref.onValue.listen((DatabaseEvent event) {
       loadDataFromDB(event);
+      print('Data reload');
     });
   }
 
@@ -127,19 +155,20 @@ class _MyAppState extends State<MyApp> {
           }
         });
       }
-      print(logMap);
+      _logMapController.add(logMap);
     } else {
       print('No data available');
     }
   }
 
-  Future<void> fetchData() async {
-    DatabaseEvent event = await ref.once();
-    loadDataFromDB(event);
+  @override
+  void dispose() {
+    _logMapController.close();
+    super.dispose();
   }
 
 
-  @override
+    @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
@@ -177,11 +206,26 @@ class _MyAppState extends State<MyApp> {
                 ],
               ),
             ),
-            FutureBuilder(
-              future: fetchData(),
+            StreamBuilder<Map<String, dynamic>>(
+              stream: _logMapController.stream,
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return LogContainer(logMap: logMap,);
+                if (snapshot.hasData) {
+                  final updatedMap = snapshot.data!;
+                  return Stack(
+                    children: [
+                      LogContainer(logMap: updatedMap),
+                      Positioned(
+                        bottom: 10,
+                        right: 10,
+                        child: IconButton(
+                          icon: Icon(Icons.add),
+                          onPressed: () {
+                            sendDataToDB();
+                          },
+                        )
+                      )
+                    ],
+                  );
                 } else {
                   return CircularProgressIndicator();
                 }
