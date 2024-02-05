@@ -65,7 +65,7 @@ class _LogContainerState extends State<LogContainer> {
             color: Colors.grey.withOpacity(0.5),
             spreadRadius: 1.5,
             blurRadius: 1.5,
-            offset: Offset(0, 3),
+            offset: Offset(0, 1),
           ),
         ],
       ),

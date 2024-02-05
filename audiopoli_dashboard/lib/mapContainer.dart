@@ -108,6 +108,7 @@ class _mapContainerState extends State<mapContainer> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      clipBehavior: Clip.hardEdge,
       margin: EdgeInsets.all(7.0),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -117,7 +118,7 @@ class _mapContainerState extends State<mapContainer> {
             color: Colors.grey.withOpacity(0.5),
             spreadRadius: 1.5,
             blurRadius: 1.5,
-            offset: Offset(0, 3),
+            offset: Offset(0, 1),
           ),
         ],
       ),

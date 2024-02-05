@@ -174,6 +174,30 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(kToolbarHeight),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 1.5,
+                  blurRadius: 1.5,
+                  offset: Offset(0, 1.5),
+                ),
+              ],
+            ),
+            child: AppBar(
+              backgroundColor: Colors.white,
+              centerTitle: false,
+              leading: Container(color: Colors.white, child: Image.asset("img/logo.png"),),
+              titleTextStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 22.0),
+              title: Text("AudioPoli"),
+            ),
+          ),
+        ),
         body: Column(
           children: [
             Expanded(
@@ -184,10 +208,10 @@ class _MyAppState extends State<MyApp> {
                     child: Column(
                       children: [
                         Expanded(
-                          child: styledContainer()
+                          child: styledContainer(widget: Container(),)
                         ),
                         Expanded(
-                          child: styledContainer(),
+                          child: styledContainer(widget: Container(),),
                         ),
                       ],
                     ),
@@ -229,7 +253,11 @@ class _MyAppState extends State<MyApp> {
                     ],
                   );
                 } else {
-                  return CircularProgressIndicator();
+                  return Expanded(
+                    child: styledContainer(
+                      widget: CircularProgressIndicator(),
+                    ),
+                  );
                 }
               },
             )
@@ -241,8 +269,8 @@ class _MyAppState extends State<MyApp> {
 }
 
 class styledContainer extends StatelessWidget {
-  styledContainer({super.key});
-
+  styledContainer({super.key, required this.widget});
+  final Widget widget;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -255,10 +283,11 @@ class styledContainer extends StatelessWidget {
             color: Colors.grey.withOpacity(0.5),
             spreadRadius: 1.5,
             blurRadius: 1.5,
-            offset: Offset(0, 3),
+            offset: Offset(0, 1),
           ),
         ],
       ),
+      child: Center(child: widget),
     );
   }
 }
