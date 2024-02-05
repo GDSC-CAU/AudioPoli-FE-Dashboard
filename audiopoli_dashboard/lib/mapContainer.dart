@@ -79,6 +79,9 @@ class _mapContainerState extends State<mapContainer> {
     print('Update MapContainer Widget');
     super.didUpdateWidget(oldWidget);
     updateDatas();
+    widget.logMap.forEach((key, value) {
+      _addMarker(incidentDatas[key]);
+    });
   }
 
 
