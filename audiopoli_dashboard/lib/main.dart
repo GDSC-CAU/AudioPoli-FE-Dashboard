@@ -83,19 +83,38 @@ void updateIsCrime(IncidentData data, bool TF) {
 }
 
 void sendDataToDB() {
+  final now = DateTime.now();
+  final dateFormatter = DateFormat('yyyy-MM-dd');
+  final timeFormatter = DateFormat('HH:mm:ss');
+  final date = dateFormatter.format(now);
+  final time = timeFormatter.format(now);
+  final latitude = double.parse((Random().nextDouble() * (37.506700 - 37.504241) + 37.504241).toStringAsFixed(6));
+  final longitude = double.parse((Random().nextDouble() * (126.959567 - 126.951557) + 126.951557).toStringAsFixed(6));
+  final detail = Random().nextInt(16) + 1;
+  Map<int, int> detailToCategory = {
+    1: 1, 2: 1, 3: 1, 4: 1,
+    5: 2, 6: 2, 7: 2, 8: 2, 9: 2,
+    10: 4, 11: 4,
+    12: 3, 13: 3,
+    14: 5,
+    15: 6, 16: 6,
+  };
+  final category = detailToCategory[detail]!;
+
   IncidentData sampleData = IncidentData(
-      date: "2023-01-31",
-      time: "15:17:50",
-      latitude: 38.5058,
-      longitude: 120.956,
+      date: date,
+      time: time,
+      latitude: latitude,
+      longitude: longitude,
       sound: "대충 base64",
-      category: 1,
-      detail: 1,
+      category: category,
+      detail: detail,
       isCrime: true,
       id: Random().nextInt(10000),
       departureTime: "00:00:00",
       caseEndTime: "11:11:11"
   );
+
   final ref = FirebaseDatabase.instance.ref('/');
   final Map<String, Map> updates = {};
   updates[sampleData.id.toString()] = sampleData.toMap();
@@ -124,6 +143,7 @@ class _MyAppState extends State<MyApp> {
     // updateIsCrime(sampleData, true);
     // updateDepartureTime(sampleData, "23:40");
     // updateCaseEndTime(sampleData, "2:20");
+    sendDataToDB();
     ref.onValue.listen((DatabaseEvent event) {
       loadDataFromDB(event);
       print('Data reload');
@@ -216,19 +236,32 @@ class _MyAppState extends State<MyApp> {
                       ],
                     ),
                   ),
-                  Expanded(
-                    flex: 3,
-                    child: Stack(
-                      children: [
-                        mapContainer(),
-                        Positioned(
-                          top: 10,
-                          right: 10,
-                          child: TimeContainer()
-                        )
-                      ]
-                    ),
-                  ),
+                StreamBuilder<Map<String, dynamic>>(
+                  stream: _logMapController.stream,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final updatedMap = snapshot.data!;
+                      return Expanded(
+                        flex: 3,
+                        child: Stack(
+                          children: [
+                            mapContainer(logMap: updatedMap),
+                            Positioned(
+                              top: 10,
+                              right: 10,
+                              child: TimeContainer()
+                            )
+                          ]
+                        ),
+                      );
+                    } else {
+                      return Expanded(
+                        child: styledContainer(
+                          widget: CircularProgressIndicator(),
+                        ),
+                      );
+                    }
+                  },),
                 ],
               ),
             ),

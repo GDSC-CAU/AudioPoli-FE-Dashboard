@@ -25,7 +25,8 @@ Future<void> loadGoogleMapsApi() {
 }
 
 class mapContainer extends StatefulWidget {
-  mapContainer({super.key});
+  mapContainer({super.key, required this.logMap});
+  Map<String, dynamic> logMap;
 
   @override
   State<mapContainer> createState() => _mapContainerState();
@@ -34,74 +35,72 @@ class mapContainer extends StatefulWidget {
 class _mapContainerState extends State<mapContainer> {
   late GoogleMapController mapController;
 
+  var incidentDatas = new Map<String, dynamic>();
+
   GoogleMapsFlutterPlatform mapsImplementation = GoogleMapsFlutterPlatform.instance =  google_map_flutter.GoogleMapsPlugin();
 
   final LatLng _center = const LatLng(37.5058, 126.956);
 
-  //그저 샘플 데이터. incidentData.dart에서 받아와야함 실제 서버에서 받을 땐
-  IncidentData sampleData0 = IncidentData(
-      date: "2012-01-26",
-      time: "13:51:50",
-      latitude: 37.5058,
-      longitude: 126.956,
-      sound: "대충 base64",
-      category: 5,
-      detail: 3,
-      isCrime: true,
-      id: 1,
-      departureTime: "",
-      caseEndTime: "",
-  );
-
-  IncidentData sampleData1 = IncidentData(
-      date: "2012-01-26",
-      time: "13:51:50",
-      latitude: 37.5068,
-      longitude: 126.957,
-      sound: "대충 base64",
-      category: 3,
-      detail: 3,
-      isCrime: true,
-      id: 1,
-      departureTime: "",
-      caseEndTime: "",
-  );
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
 
   Set<Marker> markers = {};
-  List<IncidentData> incidentDatas = [];
 
   @override
   void initState() {
     super.initState();
-    // widget.channel.stream.listen((data) {
-    //   var incidentData = IncidentData.fromJson(json.decode(data));
-    //   _addMarker(incidentData);
-    // });
-    incidentDatas.add(sampleData0);
-    incidentDatas.add(sampleData1);
     setState(() {
-      for(int i = 0; i < incidentDatas.length; i++){
-        _addMarker(incidentDatas[i]);
-      }
+      updateDatas();
+      widget.logMap.forEach((key, value) {
+        _addMarker(incidentDatas[key]);
+      });
     });
   }
 
-  void _addMarker(IncidentData incidentData) {
+  void _addMarker(dynamic entry) {
     setState(() {
       markers.add(
         Marker(
-          markerId: MarkerId(incidentData.time),
-          position: LatLng(incidentData.latitude, incidentData.longitude),
+          markerId: MarkerId(entry.time),
+          position: LatLng(entry.latitude, entry.longitude),
           infoWindow: InfoWindow(
-            title: 'Incident Category: ${incidentData.category}',
-            snippet: 'Detail: ${incidentData.detail}, Is Crime: ${incidentData.isCrime}',
+            title: 'Incident Category: ${entry.category}',
+            snippet: 'Detail: ${entry.detail}, Is Crime: ${entry.isCrime}',
           ),
         ),
       );
+    });
+  }
+
+  void didUpdateWidget(mapContainer oldWidget) {
+
+    print('Update MapContainer Widget');
+    super.didUpdateWidget(oldWidget);
+    updateDatas();
+  }
+
+
+  void updateDatas() {
+    setState(() {
+      incidentDatas.clear();
+      widget.logMap.forEach((key, value) {
+        IncidentData incident = IncidentData(
+            date: value.date,
+            time: value.time,
+            latitude: value.latitude,
+            longitude: value.longitude,
+            sound: value.sound,
+            category: value.category,
+            detail: value.detail,
+            id: value.id,
+            isCrime: value.isCrime,
+            departureTime: value.departureTime,
+            caseEndTime: value.caseEndTime
+        );
+        incidentDatas[key] = incident;
+      });
     });
   }
 
