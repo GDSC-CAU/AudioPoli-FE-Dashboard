@@ -10,6 +10,8 @@ import 'package:intl/intl.dart';
 import './mapContainer.dart';
 import './TimeContainer.dart';
 import './LogContainer.dart';
+import './StyledContainer.dart';
+import './SoundContainer.dart';
 import 'firebase_options.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:intl/intl.dart';
@@ -227,10 +229,10 @@ class _MyAppState extends State<MyApp> {
                     child: Column(
                       children: [
                         Expanded(
-                          child: styledContainer(widget: Container(),)
+                          child: SoundContainer(),
                         ),
                         Expanded(
-                          child: styledContainer(widget: Container(),),
+                          child: StyledContainer(widget: Container(),),
                         ),
                       ],
                     ),
@@ -255,7 +257,7 @@ class _MyAppState extends State<MyApp> {
                       );
                     } else {
                       return Expanded(
-                        child: styledContainer(
+                        child: StyledContainer(
                           widget: CircularProgressIndicator(),
                         ),
                       );
@@ -286,7 +288,7 @@ class _MyAppState extends State<MyApp> {
                   );
                 } else {
                   return Expanded(
-                    child: styledContainer(
+                    child: StyledContainer(
                       widget: CircularProgressIndicator(),
                     ),
                   );
@@ -296,30 +298,6 @@ class _MyAppState extends State<MyApp> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class styledContainer extends StatelessWidget {
-  styledContainer({super.key, required this.widget});
-  final Widget widget;
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(7.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 1.5,
-            blurRadius: 1.5,
-            offset: Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Center(child: widget),
     );
   }
 }
