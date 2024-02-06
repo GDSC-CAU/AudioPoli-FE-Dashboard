@@ -109,7 +109,7 @@ void sendDataToDB() {
       sound: "대충 base64",
       category: category,
       detail: detail,
-      isCrime: true,
+      isCrime: false,
       id: Random().nextInt(10000),
       departureTime: "00:00:00",
       caseEndTime: "11:11:11"
@@ -221,7 +221,6 @@ class _MyAppState extends State<MyApp> {
         body: Column(
           children: [
             Expanded(
-              flex: 3,
               child: Row(
                 children: [
                   Expanded(

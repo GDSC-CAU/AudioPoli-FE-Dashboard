@@ -56,7 +56,7 @@ class _LogContainerState extends State<LogContainer> {
       clipBehavior: Clip.hardEdge,
       margin: EdgeInsets.all(7.0),
       width: double.infinity,
-      height: 200,
+      height: 150,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
