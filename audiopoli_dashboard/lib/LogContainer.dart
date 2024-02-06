@@ -19,24 +19,34 @@ class _LogContainerState extends State<LogContainer> {
     });
   }
 
+  @override
+  void didUpdateWidget(LogContainer oldWidget) {
+
+    print('Update LogContainer Widget');
+    super.didUpdateWidget(oldWidget);
+    updateDatas();
+  }
+
+
   void updateDatas() {
-    print('update진행중중중중주');
-    print(widget.logMap.length);
-    widget.logMap.forEach((key, value) {
-      IncidentData incident = IncidentData(
-          date: value.date,
-          time: value.time,
-          latitude: value.latitude,
-          longitude: value.longitude,
-          sound: value.sound,
-          category: value.category,
-          detail: value.detail,
-          id: value.id,
-          isCrime: value.isCrime,
-          departureTime: value.departureTime,
-          caseEndTime: value.caseEndTime
-      );
-      incidentDatas[key] = incident;
+    setState(() {
+      incidentDatas.clear();
+      widget.logMap.forEach((key, value) {
+        IncidentData incident = IncidentData(
+            date: value.date,
+            time: value.time,
+            latitude: value.latitude,
+            longitude: value.longitude,
+            sound: value.sound,
+            category: value.category,
+            detail: value.detail,
+            id: value.id,
+            isCrime: value.isCrime,
+            departureTime: value.departureTime,
+            caseEndTime: value.caseEndTime
+        );
+        incidentDatas[key] = incident;
+      });
     });
   }
 
@@ -46,7 +56,7 @@ class _LogContainerState extends State<LogContainer> {
       clipBehavior: Clip.hardEdge,
       margin: EdgeInsets.all(7.0),
       width: double.infinity,
-      height: 200,
+      height: 150,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
@@ -55,7 +65,7 @@ class _LogContainerState extends State<LogContainer> {
             color: Colors.grey.withOpacity(0.5),
             spreadRadius: 1.5,
             blurRadius: 1.5,
-            offset: Offset(0, 3),
+            offset: Offset(0, 1),
           ),
         ],
       ),
@@ -84,7 +94,9 @@ class _LogContainerState extends State<LogContainer> {
                 DataColumn(label: Container(width: 100, child: Text('Sound'))),
                 DataColumn(label: Container(width: 60, child: Text('Category'))),
                 DataColumn(label: Container(width: 50, child: Text('Detail'))),
-                DataColumn(label: Container(width: 100, child: Text('Is Crime'))),
+                DataColumn(label: Container(width: 50, child: Text('Is Crime'))),
+                DataColumn(label: Container(width: 80, child: Text('Departure'))),
+                DataColumn(label: Container(width: 80, child: Text('Case End'))),
                 DataColumn(label: Container(width: 300, child: Text('Bigo'))),
               ],
               rows: [],
@@ -117,7 +129,9 @@ class _LogContainerState extends State<LogContainer> {
                   DataColumn(label: Container(width: 100,)),
                   DataColumn(label: Container(width: 60,)),
                   DataColumn(label: Container(width: 50,)),
-                  DataColumn(label: Container(width: 100,)),
+                  DataColumn(label: Container(width: 50,)),
+                  DataColumn(label: Container(width: 80,)),
+                  DataColumn(label: Container(width: 80,)),
                   DataColumn(label: Container(width: 300,)),
                 ],
                 rows: incidentDatas.entries.map((entry) {
@@ -137,7 +151,9 @@ class _LogContainerState extends State<LogContainer> {
                       DataCell(Text(entry.value.category.toString() ?? '')),
                       DataCell(Text(entry.value.detail.toString() ?? '')),
                       DataCell(Text(entry.value.isCrime == true ? 'Yes' : 'No')),
-                      DataCell(Text('')),
+                      DataCell(Text(entry.value.departureTime ?? '')),
+                      DataCell(Text(entry.value.caseEndTime ?? '')),
+                      DataCell(Text(entry.key.toString())), //임시로 데이터 key값 출력
                     ],
                   );
                 }).toList(),

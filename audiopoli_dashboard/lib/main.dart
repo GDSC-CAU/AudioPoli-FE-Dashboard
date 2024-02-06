@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:audiopoli_dashboard/LogContainer.dart';
@@ -81,22 +82,71 @@ void updateIsCrime(IncidentData data, bool TF) {
   });
 }
 
+void sendDataToDB() {
+  final now = DateTime.now();
+  final dateFormatter = DateFormat('yyyy-MM-dd');
+  final timeFormatter = DateFormat('HH:mm:ss');
+  final date = dateFormatter.format(now);
+  final time = timeFormatter.format(now);
+  final latitude = double.parse((Random().nextDouble() * (37.506700 - 37.504241) + 37.504241).toStringAsFixed(6));
+  final longitude = double.parse((Random().nextDouble() * (126.959567 - 126.951557) + 126.951557).toStringAsFixed(6));
+  final detail = Random().nextInt(16) + 1;
+  Map<int, int> detailToCategory = {
+    1: 1, 2: 1, 3: 1, 4: 1,
+    5: 2, 6: 2, 7: 2, 8: 2, 9: 2,
+    10: 4, 11: 4,
+    12: 3, 13: 3,
+    14: 5,
+    15: 6, 16: 6,
+  };
+  final category = detailToCategory[detail]!;
+
+  IncidentData sampleData = IncidentData(
+      date: date,
+      time: time,
+      latitude: latitude,
+      longitude: longitude,
+      sound: "대충 base64",
+      category: category,
+      detail: detail,
+      isCrime: false,
+      id: Random().nextInt(10000),
+      departureTime: "00:00:00",
+      caseEndTime: "11:11:11"
+  );
+
+  final ref = FirebaseDatabase.instance.ref('/');
+  final Map<String, Map> updates = {};
+  updates[sampleData.id.toString()] = sampleData.toMap();
+  ref.update(updates)
+      .then((_) {
+    print('success!');
+    // Data saved successfully!
+  })
+      .catchError((error) {
+    print(error);
+    // The write failed…
+  });
+}
+
 class _MyAppState extends State<MyApp> {
   final ref = FirebaseDatabase.instance.ref('/');
   var logMap = new Map<String, dynamic>();
   var yesterdayCrime = new List<int>.filled(7, 0);
   var yesterdayTime = new List<int>.filled(24,0);
+  final StreamController<Map<String, dynamic>> _logMapController = StreamController.broadcast();
+
 
   @override
   void initState() {
     super.initState();
-
     // updateIsCrime(sampleData, true);
-    updateDepartureTime(sampleData, "23:40");
-    updateCaseEndTime(sampleData, "2:20");
-
+    // updateDepartureTime(sampleData, "23:40");
+    // updateCaseEndTime(sampleData, "2:20");
+    sendDataToDB();
     ref.onValue.listen((DatabaseEvent event) {
       loadDataFromDB(event);
+      print('Data reload');
     });
   }
 
@@ -127,63 +177,119 @@ class _MyAppState extends State<MyApp> {
           }
         });
       }
-      print(logMap);
+      _logMapController.add(logMap);
     } else {
       print('No data available');
     }
   }
 
-  Future<void> fetchData() async {
-    DatabaseEvent event = await ref.once();
-    loadDataFromDB(event);
+  @override
+  void dispose() {
+    _logMapController.close();
+    super.dispose();
   }
 
 
-  @override
+    @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(kToolbarHeight),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 1.5,
+                  blurRadius: 1.5,
+                  offset: Offset(0, 1.5),
+                ),
+              ],
+            ),
+            child: AppBar(
+              backgroundColor: Colors.white,
+              centerTitle: false,
+              leading: Container(color: Colors.white, child: Image.asset("img/logo.png"),),
+              titleTextStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 22.0),
+              title: Text("AudioPoli"),
+            ),
+          ),
+        ),
         body: Column(
           children: [
             Expanded(
-              flex: 3,
               child: Row(
                 children: [
                   Expanded(
                     child: Column(
                       children: [
                         Expanded(
-                          child: styledContainer()
+                          child: styledContainer(widget: Container(),)
                         ),
                         Expanded(
-                          child: styledContainer(),
+                          child: styledContainer(widget: Container(),),
                         ),
                       ],
                     ),
                   ),
-                  Expanded(
-                    flex: 3,
-                    child: Stack(
-                      children: [
-                        mapContainer(),
-                        Positioned(
-                          top: 10,
-                          right: 10,
-                          child: TimeContainer()
-                        )
-                      ]
-                    ),
-                  ),
+                StreamBuilder<Map<String, dynamic>>(
+                  stream: _logMapController.stream,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final updatedMap = snapshot.data!;
+                      return Expanded(
+                        flex: 3,
+                        child: Stack(
+                          children: [
+                            mapContainer(logMap: updatedMap),
+                            Positioned(
+                              top: 10,
+                              right: 10,
+                              child: TimeContainer()
+                            )
+                          ]
+                        ),
+                      );
+                    } else {
+                      return Expanded(
+                        child: styledContainer(
+                          widget: CircularProgressIndicator(),
+                        ),
+                      );
+                    }
+                  },),
                 ],
               ),
             ),
-            FutureBuilder(
-              future: fetchData(),
+            StreamBuilder<Map<String, dynamic>>(
+              stream: _logMapController.stream,
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return LogContainer(logMap: logMap,);
+                if (snapshot.hasData) {
+                  final updatedMap = snapshot.data!;
+                  return Stack(
+                    children: [
+                      LogContainer(logMap: updatedMap),
+                      Positioned(
+                        bottom: 10,
+                        right: 10,
+                        child: IconButton(
+                          icon: Icon(Icons.add),
+                          onPressed: () {
+                            sendDataToDB();
+                          },
+                        )
+                      )
+                    ],
+                  );
                 } else {
-                  return CircularProgressIndicator();
+                  return Expanded(
+                    child: styledContainer(
+                      widget: CircularProgressIndicator(),
+                    ),
+                  );
                 }
               },
             )
@@ -195,8 +301,8 @@ class _MyAppState extends State<MyApp> {
 }
 
 class styledContainer extends StatelessWidget {
-  styledContainer({super.key});
-
+  styledContainer({super.key, required this.widget});
+  final Widget widget;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -209,10 +315,11 @@ class styledContainer extends StatelessWidget {
             color: Colors.grey.withOpacity(0.5),
             spreadRadius: 1.5,
             blurRadius: 1.5,
-            offset: Offset(0, 3),
+            offset: Offset(0, 1),
           ),
         ],
       ),
+      child: Center(child: widget),
     );
   }
 }
