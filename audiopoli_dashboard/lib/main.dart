@@ -131,6 +131,35 @@ void sendDataToDB() {
   });
 }
 
+void deleteRecentData() {
+  final DatabaseReference ref = FirebaseDatabase.instance.ref("/");
+
+  // 가장 최근 항목에 대한 쿼리 생성
+  Query lastItemQuery = ref.orderByKey().limitToLast(1);
+
+  // 쿼리 실행 및 결과에 대한 스냅샷 가져오기
+  lastItemQuery.get().then((DataSnapshot snapshot) {
+    if (snapshot.exists) {
+      // 스냅샷에서 첫 번째 항목의 키 가져오기
+      Map<dynamic, dynamic> children = snapshot.value as Map<dynamic, dynamic>;
+      String? lastItemKey = children.keys.first;
+
+      if (lastItemKey != null) {
+        // 가장 최근 항목 삭제
+        ref.child(lastItemKey).remove().then((_) {
+          print("가장 최근 항목이 성공적으로 삭제되었습니다.");
+        }).catchError((error) {
+          print("삭제 중 오류 발생: $error");
+        });
+      }
+    } else {
+      print("데이터가 존재하지 않습니다.");
+    }
+  }).catchError((error) {
+    print("쿼리 실행 중 오류 발생: $error");
+  });
+}
+
 class _MyAppState extends State<MyApp> {
   final ref = FirebaseDatabase.instance.ref('/');
   var logMap = new Map<String, dynamic>();
@@ -283,6 +312,16 @@ class _MyAppState extends State<MyApp> {
                             sendDataToDB();
                           },
                         )
+                      ),
+                      Positioned(
+                          bottom: 10,
+                          right: 50,
+                          child: IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () {
+                              deleteRecentData();
+                            },
+                          )
                       )
                     ],
                   );
