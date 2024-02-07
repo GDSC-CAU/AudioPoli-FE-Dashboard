@@ -1,3 +1,4 @@
+import 'package:audiopoli_dashboard/StyledContainer.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
@@ -59,23 +60,31 @@ class _SoundContainerState extends State<SoundContainer> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Slider(
-          value: currentPosition,
-          min: 0.0,
-          max: totalDuration,
-          onChanged: (value) async {
-            await audioPlayer.seek(Duration(milliseconds: value.toInt()));
-          },
-        ),
-        IconButton(
-          icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
-          iconSize: 64.0,
-          onPressed: () => togglePlayPause(),
-        ),
-      ],
-    );
+    return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          IconButton(
+            icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
+            iconSize: 16.0,
+            onPressed: () => togglePlayPause(),
+          ),
+          Flexible(
+            child: SliderTheme(
+              data: SliderTheme.of(context).copyWith(
+                thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5.0),
+              ),
+              child: Slider(
+                value: currentPosition,
+                min: 0.0,
+                max: totalDuration,
+                activeColor: Colors.blueAccent,
+                onChanged: (value) async {
+                  await audioPlayer.seek(Duration(milliseconds: value.toInt()));
+                },
+              ),
+            ),
+          ),
+        ],
+      );
   }
 }

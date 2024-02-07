@@ -174,7 +174,6 @@ class _MyAppState extends State<MyApp> {
     // updateIsCrime(sampleData, true);
     // updateDepartureTime(sampleData, "23:40");
     // updateCaseEndTime(sampleData, "2:20");
-    sendDataToDB();
     ref.onValue.listen((DatabaseEvent event) {
       loadDataFromDB(event);
       print('Data reload');
@@ -261,37 +260,42 @@ class _MyAppState extends State<MyApp> {
                           child: SoundContainer(),
                         ),
                         Expanded(
+                          flex: 3,
+                          child: StyledContainer(widget: Container(),),
+                        ),
+                        Expanded(
+                          flex: 3,
                           child: StyledContainer(widget: Container(),),
                         ),
                       ],
                     ),
                   ),
-                StreamBuilder<Map<String, dynamic>>(
-                  stream: _logMapController.stream,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      final updatedMap = snapshot.data!;
-                      return Expanded(
-                        flex: 3,
-                        child: Stack(
-                          children: [
-                            mapContainer(logMap: updatedMap),
-                            Positioned(
-                              top: 10,
-                              right: 10,
-                              child: TimeContainer()
-                            )
-                          ]
-                        ),
-                      );
-                    } else {
-                      return Expanded(
-                        child: StyledContainer(
-                          widget: CircularProgressIndicator(),
-                        ),
-                      );
-                    }
-                  },),
+                // StreamBuilder<Map<String, dynamic>>(
+                //   stream: _logMapController.stream,
+                //   builder: (context, snapshot) {
+                //     if (snapshot.hasData) {
+                //       final updatedMap = snapshot.data!;
+                //       return Expanded(
+                //         flex: 3,
+                //         child: Stack(
+                //           children: [
+                //             mapContainer(logMap: updatedMap),
+                //             Positioned(
+                //               top: 10,
+                //               right: 10,
+                //               child: TimeContainer()
+                //             )
+                //           ]
+                //         ),
+                //       );
+                //     } else {
+                //       return Expanded(
+                //         child: StyledContainer(
+                //           widget: CircularProgressIndicator(),
+                //         ),
+                //       );
+                //     }
+                //   },),
                 ],
               ),
             ),

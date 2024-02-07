@@ -107,6 +107,11 @@ class _mapContainerState extends State<mapContainer> {
     });
   }
 
+  void dispose() {
+    mapController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(

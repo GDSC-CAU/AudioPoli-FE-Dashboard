@@ -1,3 +1,4 @@
+import 'package:audiopoli_dashboard/SoundContainer.dart';
 import 'package:flutter/material.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 import 'incidentData.dart';
@@ -147,7 +148,7 @@ class _LogContainerState extends State<LogContainer> {
                       DataCell(Text(entry.value.time ?? '')),
                       DataCell(Text(entry.value.latitude .toString() ?? '')),
                       DataCell(Text(entry.value.longitude.toString() ?? '')),
-                      DataCell(Text(entry.value.sound ?? '')),
+                      DataCell(SoundContainer()),
                       DataCell(Text(entry.value.category.toString() ?? '')),
                       DataCell(Text(entry.value.detail.toString() ?? '')),
                       DataCell(Text(entry.value.isCrime == true ? 'Yes' : 'No')),
