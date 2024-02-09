@@ -1,9 +1,9 @@
-import 'package:audiopoli_dashboard/StyledContainer.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
 class SoundContainer extends StatefulWidget {
-  SoundContainer({Key? key}) : super(key: key);
+  const SoundContainer({Key? key}) : super(key: key);
 
   @override
   State<SoundContainer> createState() => _SoundContainerState();
@@ -40,7 +40,9 @@ class _SoundContainerState extends State<SoundContainer> {
         });
       });
     } catch (e) {
-      print("An error occurred: $e");
+      if (kDebugMode) {
+        print("An error occurred: $e");
+      }
     }
   }
 
@@ -65,19 +67,23 @@ class _SoundContainerState extends State<SoundContainer> {
         children: [
           IconButton(
             icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
-            iconSize: 16.0,
+            iconSize: 24.0,
             onPressed: () => togglePlayPause(),
+            padding: EdgeInsets.zero,
           ),
           Flexible(
             child: SliderTheme(
               data: SliderTheme.of(context).copyWith(
-                thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5.0),
+                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5.0),
+                thumbColor: Colors.blueAccent,
+                overlayShape: const RoundSliderOverlayShape(overlayRadius: 10.0),
+                overlayColor: Colors.blueAccent.withOpacity(0.2),
+                activeTrackColor: Colors.blue
               ),
               child: Slider(
                 value: currentPosition,
                 min: 0.0,
                 max: totalDuration,
-                activeColor: Colors.blueAccent,
                 onChanged: (value) async {
                   await audioPlayer.seek(Duration(milliseconds: value.toInt()));
                 },
