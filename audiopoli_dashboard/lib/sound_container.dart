@@ -67,7 +67,7 @@ class _SoundContainerState extends State<SoundContainer> {
         children: [
           IconButton(
             icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
-            iconSize: 24.0,
+            iconSize: 20.0,
             onPressed: () => togglePlayPause(),
             padding: EdgeInsets.zero,
           ),

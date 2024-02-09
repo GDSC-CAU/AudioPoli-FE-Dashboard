@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:audiopoli_dashboard/log_container.dart';
 import 'package:audiopoli_dashboard/incident_data.dart';
+import 'package:audiopoli_dashboard/time_container.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,8 @@ import './styled_container.dart';
 import './sound_container.dart';
 import 'firebase_options.dart';
 import 'package:firebase_database/firebase_database.dart';
+
+import 'map_container.dart';
 var now = DateTime.now();
 // "date": DateFormat('yyyy-MM-dd').format(now),
 
@@ -207,6 +210,7 @@ class _MyAppState extends State<MyApp> {
     if(snapshot.exists)
     {
       var data = snapshot.value;
+      Map<String, IncidentData> newLogMap = {};
       if(data is Map) {
         data.forEach((key, value) {
           IncidentData incident = IncidentData(
@@ -222,13 +226,16 @@ class _MyAppState extends State<MyApp> {
               departureTime: value['departureTime'],
               caseEndTime: value['caseEndTime']
           );
-          logMap[key] = incident;
+          newLogMap[key] = incident;
           if(compareDate(value['date'])) {
             yesterdayCrime[incident.category]++;
             yesterdayTime[int.parse(incident.time.split(":")[0])]++;
           }
         });
       }
+      setState(() {
+        logMap = newLogMap;
+      });
       _logMapController.add(logMap);
     } else {
       if (kDebugMode) {
@@ -294,32 +301,32 @@ class _MyAppState extends State<MyApp> {
                       ],
                     ),
                   ),
-                // StreamBuilder<Map<String, dynamic>>(
-                //   stream: _logMapController.stream,
-                //   builder: (context, snapshot) {
-                //     if (snapshot.hasData) {
-                //       final updatedMap = snapshot.data!;
-                //       return Expanded(
-                //         flex: 3,
-                //         child: Stack(
-                //           children: [
-                //             mapContainer(logMap: updatedMap),
-                //             Positioned(
-                //               top: 10,
-                //               right: 10,
-                //               child: TimeContainer()
-                //             )
-                //           ]
-                //         ),
-                //       );
-                //     } else {
-                //       return Expanded(
-                //         child: StyledContainer(
-                //           widget: CircularProgressIndicator(),
-                //         ),
-                //       );
-                //     }
-                //   },),
+                StreamBuilder<Map<String, dynamic>>(
+                  stream: _logMapController.stream,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final updatedMap = snapshot.data!;
+                      return Expanded(
+                        flex: 3,
+                        child: Stack(
+                          children: [
+                            MapContainer(logMap: updatedMap),
+                            const Positioned(
+                              top: 10,
+                              right: 10,
+                              child: TimeContainer()
+                            )
+                          ]
+                        ),
+                      );
+                    } else {
+                      return const Expanded(
+                        child: StyledContainer(
+                          widget: CircularProgressIndicator(),
+                        ),
+                      );
+                    }
+                  },),
                 ],
               ),
             ),

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:audiopoli_dashboard/styled_container.dart';
 import 'package:flutter/foundation.dart';
 import 'package:universal_html/js.dart' as js;
 import 'package:flutter/material.dart';
@@ -118,22 +119,8 @@ class _MapContainerState extends State<MapContainer> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      clipBehavior: Clip.hardEdge,
-      margin: const EdgeInsets.all(7.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 1.5,
-            blurRadius: 1.5,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child:FutureBuilder(
+    return StyledContainer(
+      widget:FutureBuilder(
         future: loadGoogleMapsApi(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {

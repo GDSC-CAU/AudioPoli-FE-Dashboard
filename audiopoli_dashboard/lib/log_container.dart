@@ -105,14 +105,18 @@ class _LogContainerState extends State<LogContainer> {
             child: Theme(
               data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
               child: DataTable(
-                border: const TableBorder(
+                border:  const TableBorder(
+                  horizontalInside: BorderSide(
+                      width: 0.5,
+                      color: Colors.grey
+                  ),
                   verticalInside: BorderSide(
                     width: 0.5,
                     color: Colors.grey
                   ),
-                  horizontalInside: BorderSide(
-                    color: Colors.transparent,
-                    style: BorderStyle.solid
+                  bottom: BorderSide(
+                    width: 0.5,
+                    color: Colors.grey
                   )
                 ),
                 columnSpacing: 20,
@@ -135,7 +139,7 @@ class _LogContainerState extends State<LogContainer> {
                   return DataRow(
                     color: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
                       if (incidentMap.keys.toList().indexOf(entry.key) % 2 != 0) {
-                        return Colors.grey.withOpacity(0.3);
+                        return Colors.grey.withOpacity(0.15);
                       }
                       return null;
                     }),
@@ -147,8 +151,8 @@ class _LogContainerState extends State<LogContainer> {
                       DataCell(Text(entry.value.category.toString())),
                       DataCell(Text(entry.value.detail.toString())),
                       DataCell(Text(entry.value.isCrime == true ? 'Yes' : 'No')),
-                      DataCell(Text(entry.value.departureTime ?? '')),
-                      DataCell(Text(entry.value.caseEndTime ?? '')),
+                      DataCell(Text(entry.value.departureTime ?? '-')),
+                      DataCell(Text(entry.value.caseEndTime ?? '-')),
                       const DataCell(SoundContainer()),
                     ],
                   );
