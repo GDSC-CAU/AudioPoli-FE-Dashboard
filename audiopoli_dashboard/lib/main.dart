@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import './styled_container.dart';
-import './sound_container.dart';
 import 'firebase_options.dart';
 import 'package:firebase_database/firebase_database.dart';
 
@@ -287,9 +286,6 @@ class _MyAppState extends State<MyApp> {
                   Expanded(
                     child: Column(
                       children: [
-                        const Expanded(
-                          child: SoundContainer(),
-                        ),
                         Expanded(
                           flex: 3,
                           child: StyledContainer(widget: Container(),),
