@@ -1,11 +1,9 @@
 import 'dart:async';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class TimeContainer extends StatefulWidget {
-  TimeContainer({super.key});
+  const TimeContainer({super.key});
   @override
   State<TimeContainer> createState() => _TimeContainerState();
 }
@@ -21,8 +19,7 @@ class _TimeContainerState extends State<TimeContainer> {
     time = DateTime.now();
     updateTime();
 
-    // 매 초마다 시간 업데이트
-    timer = Timer.periodic(Duration(seconds: 1), (Timer t) => updateTime());
+    timer = Timer.periodic(const Duration(seconds: 1), (Timer t) => updateTime());
   }
 
   void updateTime() {
@@ -41,8 +38,8 @@ class _TimeContainerState extends State<TimeContainer> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(5.0),
-      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+      margin: const EdgeInsets.all(5.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(100),
@@ -51,13 +48,13 @@ class _TimeContainerState extends State<TimeContainer> {
             color: Colors.grey.withOpacity(0.5),
             spreadRadius: 1.5,
             blurRadius: 1.5,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
       child: Text(
         timeStr,
-        style: TextStyle(fontSize: 28, color: Colors.black, fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 28, color: Colors.black, fontWeight: FontWeight.bold),
       ),
     );
   }

@@ -1,12 +1,13 @@
 import 'dart:async';
-import 'dart:js' as js;
-import 'package:flutter/cupertino.dart';
+import 'package:audiopoli_dashboard/styled_container.dart';
+import 'package:flutter/foundation.dart';
+import 'package:universal_html/js.dart' as js;
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_flutter_web/google_maps_flutter_web.dart' as google_map_flutter;
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
-import './incidentData.dart';
+import './incident_data.dart';
 
 Future<void> loadGoogleMapsApi() {
   var completer = Completer<void>();
@@ -14,7 +15,7 @@ Future<void> loadGoogleMapsApi() {
   String apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? "API 키가 없습니다";
   js.context.callMethod('setGoogleMapsApiKey', [apiKey]);
 
-  Timer.periodic(Duration(milliseconds: 100), (Timer timer) {
+  Timer.periodic(const Duration(milliseconds: 100), (Timer timer) {
     if (js.context.hasProperty('google')) {
       timer.cancel();
       completer.complete();
@@ -24,18 +25,18 @@ Future<void> loadGoogleMapsApi() {
   return completer.future;
 }
 
-class mapContainer extends StatefulWidget {
-  mapContainer({super.key, required this.logMap});
-  Map<String, dynamic> logMap;
+class MapContainer extends StatefulWidget {
+  const MapContainer({super.key, required this.logMap});
+  final Map<String, dynamic> logMap;
 
   @override
-  State<mapContainer> createState() => _mapContainerState();
+  State<MapContainer> createState() => _MapContainerState();
 }
 
-class _mapContainerState extends State<mapContainer> {
+class _MapContainerState extends State<MapContainer> {
   late GoogleMapController mapController;
 
-  var incidentDatas = new Map<String, dynamic>();
+  var incidentMap = <String, dynamic>{};
 
   GoogleMapsFlutterPlatform mapsImplementation = GoogleMapsFlutterPlatform.instance =  google_map_flutter.GoogleMapsPlugin();
 
@@ -51,17 +52,24 @@ class _mapContainerState extends State<mapContainer> {
   @override
   void initState() {
     super.initState();
-    setState(() {
-      updateDatas();
-      widget.logMap.forEach((key, value) {
-        _addMarker(incidentDatas[key]);
-      });
-    });
+    updateData();
+    _updateMarkers();
   }
 
-  void _addMarker(dynamic entry) {
+  @override
+  void didUpdateWidget(MapContainer oldWidget) {
+
+    if (kDebugMode) {
+      print('Update MapContainer Widget');
+    }
+    super.didUpdateWidget(oldWidget);
+    updateData();
+    _updateMarkers();
+  }
+
+  void _addMarker(Set<Marker> newMarkers, dynamic entry) {
     setState(() {
-      markers.add(
+      newMarkers.add(
         Marker(
           markerId: MarkerId(entry.time),
           position: LatLng(entry.latitude, entry.longitude),
@@ -74,20 +82,19 @@ class _mapContainerState extends State<mapContainer> {
     });
   }
 
-  void didUpdateWidget(mapContainer oldWidget) {
-
-    print('Update MapContainer Widget');
-    super.didUpdateWidget(oldWidget);
-    updateDatas();
+  void _updateMarkers() {
+    Set<Marker> newMarkers = {};
     widget.logMap.forEach((key, value) {
-      _addMarker(incidentDatas[key]);
+      _addMarker(newMarkers, incidentMap[key]);
+    });
+    setState(() {
+      markers = newMarkers;
     });
   }
 
-
-  void updateDatas() {
+  void updateData() {
     setState(() {
-      incidentDatas.clear();
+      incidentMap.clear();
       widget.logMap.forEach((key, value) {
         IncidentData incident = IncidentData(
             date: value.date,
@@ -102,29 +109,21 @@ class _mapContainerState extends State<mapContainer> {
             departureTime: value.departureTime,
             caseEndTime: value.caseEndTime
         );
-        incidentDatas[key] = incident;
+        incidentMap[key] = incident;
       });
     });
   }
 
   @override
+  void dispose() {
+    mapController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      clipBehavior: Clip.hardEdge,
-      margin: EdgeInsets.all(7.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 1.5,
-            blurRadius: 1.5,
-            offset: Offset(0, 1),
-          ),
-        ],
-      ),
-      child:FutureBuilder(
+    return StyledContainer(
+      widget:FutureBuilder(
         future: loadGoogleMapsApi(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
@@ -137,7 +136,7 @@ class _mapContainerState extends State<mapContainer> {
               markers: markers,
             );
           } else {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           }
         },
       ),
