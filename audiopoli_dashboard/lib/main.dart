@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import './styled_container.dart';
+import 'custom_icon_provider.dart';
 import 'firebase_options.dart';
 import 'package:firebase_database/firebase_database.dart';
 
@@ -22,6 +23,7 @@ IncidentData sampleData = IncidentData(date: DateFormat('yyyy-MM-dd').format(now
 void main() async {
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
+  await IconProvider().loadCustomIcon();
   runApp(const MyApp());
 }
 

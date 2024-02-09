@@ -1,29 +1,18 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:ui' as UI;
 import 'package:audiopoli_dashboard/styled_container.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:universal_html/js.dart' as js;
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_flutter_web/google_maps_flutter_web.dart' as google_map_flutter;
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
+import 'package:web_socket_channel/status.dart';
 import './incident_data.dart';
-
-Future<void> loadGoogleMapsApi() {
-  var completer = Completer<void>();
-
-  String apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? "API 키가 없습니다";
-  js.context.callMethod('setGoogleMapsApiKey', [apiKey]);
-
-  Timer.periodic(const Duration(milliseconds: 100), (Timer timer) {
-    if (js.context.hasProperty('google')) {
-      timer.cancel();
-      completer.complete();
-    }
-  });
-
-  return completer.future;
-}
+import 'custom_icon_provider.dart';
 
 class MapContainer extends StatefulWidget {
   const MapContainer({super.key, required this.logMap});
@@ -35,25 +24,38 @@ class MapContainer extends StatefulWidget {
 
 class _MapContainerState extends State<MapContainer> {
   late GoogleMapController mapController;
-
   var incidentMap = <String, dynamic>{};
 
   GoogleMapsFlutterPlatform mapsImplementation = GoogleMapsFlutterPlatform.instance =  google_map_flutter.GoogleMapsPlugin();
 
   final LatLng _center = const LatLng(37.5058, 126.956);
-
+  Set<Marker> markers = {};
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
 
-  Set<Marker> markers = {};
+  Future<void> loadGoogleMapsApi() {
+    var completer = Completer<void>();
+
+    String apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? "API 키가 없습니다";
+    js.context.callMethod('setGoogleMapsApiKey', [apiKey]);
+
+    Timer.periodic(const Duration(milliseconds: 100), (Timer timer) {
+      if (js.context.hasProperty('google')) {
+        timer.cancel();
+        completer.complete();
+      }
+    });
+
+    return completer.future;
+  }
 
   @override
   void initState() {
     super.initState();
     updateData();
-    _updateMarkers();
+    updateMarkers();
   }
 
   @override
@@ -64,25 +66,25 @@ class _MapContainerState extends State<MapContainer> {
     }
     super.didUpdateWidget(oldWidget);
     updateData();
-    _updateMarkers();
+    updateMarkers();
   }
 
-  void _addMarker(Set<Marker> newMarkers, dynamic entry) {
-    setState(() {
-      newMarkers.add(
-        Marker(
-          markerId: MarkerId(entry.time),
-          position: LatLng(entry.latitude, entry.longitude),
-          infoWindow: InfoWindow(
-            title: 'Incident Category: ${entry.category}',
-            snippet: 'Detail: ${entry.detail}, Is Crime: ${entry.isCrime}',
-          ),
+
+  Future<void> _addMarker(Set<Marker> newMarkers, dynamic entry) async {
+    newMarkers.add(
+      Marker(
+        icon: IconProvider().getIcon() ?? BitmapDescriptor.defaultMarker,
+        markerId: MarkerId(entry.time),
+        position: LatLng(entry.latitude, entry.longitude),
+        infoWindow: InfoWindow(
+          title: 'Incident Category: ${entry.category}',
+          snippet: 'Detail: ${entry.detail}, Is Crime: ${entry.isCrime}',
         ),
-      );
-    });
+      ),
+    );
   }
 
-  void _updateMarkers() {
+  void updateMarkers() {
     Set<Marker> newMarkers = {};
     widget.logMap.forEach((key, value) {
       _addMarker(newMarkers, incidentMap[key]);
