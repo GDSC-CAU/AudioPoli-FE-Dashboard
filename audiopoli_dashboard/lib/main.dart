@@ -1,21 +1,19 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:audiopoli_dashboard/LogContainer.dart';
-import 'package:audiopoli_dashboard/incidentData.dart';
+import 'package:audiopoli_dashboard/log_container.dart';
+import 'package:audiopoli_dashboard/incident_data.dart';
+import 'package:audiopoli_dashboard/time_container.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
-import './mapContainer.dart';
-import './TimeContainer.dart';
-import './LogContainer.dart';
-import './StyledContainer.dart';
-import './SoundContainer.dart';
+import './styled_container.dart';
 import 'firebase_options.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:intl/intl.dart';
 
+import 'map_container.dart';
 var now = DateTime.now();
 // "date": DateFormat('yyyy-MM-dd').format(now),
 
@@ -24,7 +22,7 @@ IncidentData sampleData = IncidentData(date: DateFormat('yyyy-MM-dd').format(now
 void main() async {
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -52,10 +50,14 @@ void updateDepartureTime(IncidentData data, String time)
 
   ref.update({"departureTime": time})
       .then((_) {
-    print('success!');
+    if (kDebugMode) {
+      print('success!');
+    }
   })
       .catchError((error) {
-    print(error);
+    if (kDebugMode) {
+      print(error);
+    }
   });
 }
 
@@ -65,22 +67,30 @@ void updateCaseEndTime(IncidentData data, String time)
 
   ref.update({"caseEndTime": time})
       .then((_) {
-    print('success!');
+    if (kDebugMode) {
+      print('success!');
+    }
   })
       .catchError((error) {
-    print(error);
+    if (kDebugMode) {
+      print(error);
+    }
   });
 }
 
-void updateIsCrime(IncidentData data, bool TF) {
+void updateIsCrime(IncidentData data, bool tf) {
   final ref = FirebaseDatabase.instance.ref("/${data.id.toString()}");
 
-  ref.update({"isCrime": TF})
+  ref.update({"isCrime": tf})
       .then((_) {
-    print('success!');
+    if (kDebugMode) {
+      print('success!');
+    }
   })
       .catchError((error) {
-    print(error);
+    if (kDebugMode) {
+      print(error);
+    }
   });
 }
 
@@ -122,11 +132,15 @@ void sendDataToDB() {
   updates[sampleData.id.toString()] = sampleData.toMap();
   ref.update(updates)
       .then((_) {
-    print('success!');
+    if (kDebugMode) {
+      print('success!');
+    }
     // Data saved successfully!
   })
       .catchError((error) {
-    print(error);
+    if (kDebugMode) {
+      print(error);
+    }
     // The write failed…
   });
 }
@@ -147,24 +161,32 @@ void deleteRecentData() {
       if (lastItemKey != null) {
         // 가장 최근 항목 삭제
         ref.child(lastItemKey).remove().then((_) {
-          print("가장 최근 항목이 성공적으로 삭제되었습니다.");
+          if (kDebugMode) {
+            print("가장 최근 항목이 성공적으로 삭제되었습니다.");
+          }
         }).catchError((error) {
-          print("삭제 중 오류 발생: $error");
+          if (kDebugMode) {
+            print("삭제 중 오류 발생: $error");
+          }
         });
       }
     } else {
-      print("데이터가 존재하지 않습니다.");
+      if (kDebugMode) {
+        print("데이터가 존재하지 않습니다.");
+      }
     }
   }).catchError((error) {
-    print("쿼리 실행 중 오류 발생: $error");
+    if (kDebugMode) {
+      print("쿼리 실행 중 오류 발생: $error");
+    }
   });
 }
 
 class _MyAppState extends State<MyApp> {
   final ref = FirebaseDatabase.instance.ref('/');
-  var logMap = new Map<String, dynamic>();
-  var yesterdayCrime = new List<int>.filled(7, 0);
-  var yesterdayTime = new List<int>.filled(24,0);
+  var logMap = <String, dynamic>{};
+  var yesterdayCrime = List<int>.filled(7, 0);
+  var yesterdayTime = List<int>.filled(24,0);
   final StreamController<Map<String, dynamic>> _logMapController = StreamController.broadcast();
 
 
@@ -174,10 +196,11 @@ class _MyAppState extends State<MyApp> {
     // updateIsCrime(sampleData, true);
     // updateDepartureTime(sampleData, "23:40");
     // updateCaseEndTime(sampleData, "2:20");
-    sendDataToDB();
     ref.onValue.listen((DatabaseEvent event) {
       loadDataFromDB(event);
-      print('Data reload');
+      if (kDebugMode) {
+        print('Data reload');
+      }
     });
   }
 
@@ -186,6 +209,7 @@ class _MyAppState extends State<MyApp> {
     if(snapshot.exists)
     {
       var data = snapshot.value;
+      Map<String, IncidentData> newLogMap = {};
       if(data is Map) {
         data.forEach((key, value) {
           IncidentData incident = IncidentData(
@@ -201,16 +225,21 @@ class _MyAppState extends State<MyApp> {
               departureTime: value['departureTime'],
               caseEndTime: value['caseEndTime']
           );
-          logMap[key] = incident;
+          newLogMap[key] = incident;
           if(compareDate(value['date'])) {
             yesterdayCrime[incident.category]++;
             yesterdayTime[int.parse(incident.time.split(":")[0])]++;
           }
         });
       }
+      setState(() {
+        logMap = newLogMap;
+      });
       _logMapController.add(logMap);
     } else {
-      print('No data available');
+      if (kDebugMode) {
+        print('No data available');
+      }
     }
   }
 
@@ -226,7 +255,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(kToolbarHeight),
+          preferredSize: const Size.fromHeight(kToolbarHeight),
           child: Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -236,7 +265,7 @@ class _MyAppState extends State<MyApp> {
                   color: Colors.grey.withOpacity(0.5),
                   spreadRadius: 1.5,
                   blurRadius: 1.5,
-                  offset: Offset(0, 1.5),
+                  offset: const Offset(0, 1.5),
                 ),
               ],
             ),
@@ -244,8 +273,8 @@ class _MyAppState extends State<MyApp> {
               backgroundColor: Colors.white,
               centerTitle: false,
               leading: Container(color: Colors.white, child: Image.asset("img/logo.png"),),
-              titleTextStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 22.0),
-              title: Text("AudioPoli"),
+              titleTextStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22.0),
+              title: const Text("AudioPoli"),
             ),
           ),
         ),
@@ -258,9 +287,11 @@ class _MyAppState extends State<MyApp> {
                     child: Column(
                       children: [
                         Expanded(
-                          child: SoundContainer(),
+                          flex: 3,
+                          child: StyledContainer(widget: Container(),),
                         ),
                         Expanded(
+                          flex: 3,
                           child: StyledContainer(widget: Container(),),
                         ),
                       ],
@@ -275,8 +306,8 @@ class _MyAppState extends State<MyApp> {
                         flex: 3,
                         child: Stack(
                           children: [
-                            mapContainer(logMap: updatedMap),
-                            Positioned(
+                            MapContainer(logMap: updatedMap),
+                            const Positioned(
                               top: 10,
                               right: 10,
                               child: TimeContainer()
@@ -285,7 +316,7 @@ class _MyAppState extends State<MyApp> {
                         ),
                       );
                     } else {
-                      return Expanded(
+                      return const Expanded(
                         child: StyledContainer(
                           widget: CircularProgressIndicator(),
                         ),
@@ -307,7 +338,7 @@ class _MyAppState extends State<MyApp> {
                         bottom: 10,
                         right: 10,
                         child: IconButton(
-                          icon: Icon(Icons.add),
+                          icon: const Icon(Icons.add),
                           onPressed: () {
                             sendDataToDB();
                           },
@@ -317,7 +348,7 @@ class _MyAppState extends State<MyApp> {
                           bottom: 10,
                           right: 50,
                           child: IconButton(
-                            icon: Icon(Icons.delete),
+                            icon: const Icon(Icons.delete),
                             onPressed: () {
                               deleteRecentData();
                             },
@@ -326,7 +357,7 @@ class _MyAppState extends State<MyApp> {
                     ],
                   );
                 } else {
-                  return Expanded(
+                  return const Expanded(
                     child: StyledContainer(
                       widget: CircularProgressIndicator(),
                     ),
