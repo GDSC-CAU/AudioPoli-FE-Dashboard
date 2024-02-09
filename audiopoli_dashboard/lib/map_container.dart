@@ -52,17 +52,24 @@ class _MapContainerState extends State<MapContainer> {
   @override
   void initState() {
     super.initState();
-    setState(() {
-      updateData();
-      widget.logMap.forEach((key, value) {
-        _addMarker(incidentMap[key]);
-      });
-    });
+    updateData();
+    _updateMarkers();
   }
 
-  void _addMarker(dynamic entry) {
+  @override
+  void didUpdateWidget(MapContainer oldWidget) {
+
+    if (kDebugMode) {
+      print('Update MapContainer Widget');
+    }
+    super.didUpdateWidget(oldWidget);
+    updateData();
+    _updateMarkers();
+  }
+
+  void _addMarker(Set<Marker> newMarkers, dynamic entry) {
     setState(() {
-      markers.add(
+      newMarkers.add(
         Marker(
           markerId: MarkerId(entry.time),
           position: LatLng(entry.latitude, entry.longitude),
@@ -75,19 +82,15 @@ class _MapContainerState extends State<MapContainer> {
     });
   }
 
-  @override
-  void didUpdateWidget(MapContainer oldWidget) {
-
-    if (kDebugMode) {
-      print('Update MapContainer Widget');
-    }
-    super.didUpdateWidget(oldWidget);
-    updateData();
+  void _updateMarkers() {
+    Set<Marker> newMarkers = {};
     widget.logMap.forEach((key, value) {
-      _addMarker(incidentMap[key]);
+      _addMarker(newMarkers, incidentMap[key]);
+    });
+    setState(() {
+      markers = newMarkers;
     });
   }
-
 
   void updateData() {
     setState(() {
