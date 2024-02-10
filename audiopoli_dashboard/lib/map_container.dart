@@ -12,7 +12,7 @@ import 'package:google_maps_flutter_web/google_maps_flutter_web.dart' as google_
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:web_socket_channel/status.dart';
 import './incident_data.dart';
-import 'custom_icon_provider.dart';
+import 'custom_marker_provider.dart';
 
 class MapContainer extends StatefulWidget {
   const MapContainer({super.key, required this.logMap});
@@ -73,7 +73,7 @@ class _MapContainerState extends State<MapContainer> {
   Future<void> _addMarker(Set<Marker> newMarkers, dynamic entry) async {
     newMarkers.add(
       Marker(
-        icon: IconProvider().getIcon() ?? BitmapDescriptor.defaultMarker,
+        icon: MarkerProvider().getMarker(entry.detail) ?? BitmapDescriptor.defaultMarker,
         markerId: MarkerId(entry.time),
         position: LatLng(entry.latitude, entry.longitude),
         infoWindow: InfoWindow(

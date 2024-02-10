@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import './styled_container.dart';
-import 'custom_icon_provider.dart';
+import 'custom_marker_provider.dart';
 import 'firebase_options.dart';
 import 'package:firebase_database/firebase_database.dart';
 
@@ -23,7 +23,7 @@ IncidentData sampleData = IncidentData(date: DateFormat('yyyy-MM-dd').format(now
 void main() async {
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
-  await IconProvider().loadCustomIcon();
+  await MarkerProvider().loadCustomMarker();
   runApp(const MyApp());
 }
 
@@ -104,7 +104,7 @@ void sendDataToDB() {
   final time = timeFormatter.format(now);
   final latitude = double.parse((Random().nextDouble() * (37.506700 - 37.504241) + 37.504241).toStringAsFixed(6));
   final longitude = double.parse((Random().nextDouble() * (126.959567 - 126.951557) + 126.951557).toStringAsFixed(6));
-  final detail = Random().nextInt(16) + 1;
+  final detail = Random().nextInt(14) + 1;
   Map<int, int> detailToCategory = {
     1: 1, 2: 1, 3: 1, 4: 1,
     5: 2, 6: 2, 7: 2, 8: 2, 9: 2,
