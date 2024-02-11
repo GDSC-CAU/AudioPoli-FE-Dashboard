@@ -65,7 +65,7 @@ class _MapContainerState extends State<MapContainer> {
         position: LatLng(entry.latitude, entry.longitude),
         onTap: () {
           _customInfoWindowController.addInfoWindow!(
-            CustomInfoWindowWidget(),
+            CustomInfoWindowWidget(data: entry,),
             LatLng(entry.latitude, entry.longitude),
           );
         },
@@ -141,7 +141,7 @@ class _MapContainerState extends State<MapContainer> {
                   controller: _customInfoWindowController,
                   height: 100,
                   width: 150,
-                  offset: 50,
+                  offset: 70,
                 ),
               ]
             );
