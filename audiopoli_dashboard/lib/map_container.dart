@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:audiopoli_dashboard/sound_container.dart';
 import 'package:audiopoli_dashboard/styled_container.dart';
 import './custom_info_window.dart';
 import 'package:flutter/foundation.dart';
@@ -27,7 +28,7 @@ class _MapContainerState extends State<MapContainer> {
   Set<Marker> markers = {};
 
   GoogleMapsFlutterPlatform mapsImplementation = GoogleMapsFlutterPlatform.instance =  google_map_flutter.GoogleMapsPlugin();
-  CustomInfoWindowController _customInfoWindowController = CustomInfoWindowController();
+  final CustomInfoWindowController _customInfoWindowController = CustomInfoWindowController();
 
   final LatLng _center = const LatLng(37.5058, 126.956);
 
@@ -64,8 +65,9 @@ class _MapContainerState extends State<MapContainer> {
         onTap: () {
           _customInfoWindowController.addInfoWindow!(
             Container(
-              child: Text("커스텀 정보 창 내용"),
-              // 커스텀 위젯 구성
+              child: StyledContainer(
+                widget: SoundContainer(),
+              )
             ),
             LatLng(entry.latitude, entry.longitude),
           );
@@ -126,12 +128,6 @@ class _MapContainerState extends State<MapContainer> {
           if (snapshot.connectionState == ConnectionState.done) {
             return Stack(
               children: <Widget> [
-                CustomInfoWindow(
-                  controller: _customInfoWindowController,
-                  height: 75,
-                  width: 150,
-                  offset: 50,
-                ),
                 GoogleMap(
                   onMapCreated: (GoogleMapController controller) {
                     _customInfoWindowController.googleMapController = controller;
@@ -144,7 +140,16 @@ class _MapContainerState extends State<MapContainer> {
                     target: _center,
                     zoom: 17.0,
                   ),
+                  onCameraMove: (CameraPosition position) {
+                    _customInfoWindowController.onCameraMove!();
+                  },
                   markers: markers,
+                ),
+                CustomInfoWindow(
+                  controller: _customInfoWindowController,
+                  height: 75,
+                  width: 150,
+                  offset: 50,
                 ),
               ]
             );
