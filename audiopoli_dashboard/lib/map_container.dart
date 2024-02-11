@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:audiopoli_dashboard/custom_info_window_widget.dart';
 import 'package:audiopoli_dashboard/sound_container.dart';
 import 'package:audiopoli_dashboard/styled_container.dart';
 import './custom_info_window.dart';
@@ -64,11 +65,7 @@ class _MapContainerState extends State<MapContainer> {
         position: LatLng(entry.latitude, entry.longitude),
         onTap: () {
           _customInfoWindowController.addInfoWindow!(
-            Container(
-              child: StyledContainer(
-                widget: SoundContainer(),
-              )
-            ),
+            CustomInfoWindowWidget(),
             LatLng(entry.latitude, entry.longitude),
           );
         },
@@ -142,7 +139,7 @@ class _MapContainerState extends State<MapContainer> {
                 ),
                 CustomInfoWindow(
                   controller: _customInfoWindowController,
-                  height: 75,
+                  height: 100,
                   width: 150,
                   offset: 50,
                 ),
