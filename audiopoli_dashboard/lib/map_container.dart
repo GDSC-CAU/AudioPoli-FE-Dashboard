@@ -56,11 +56,11 @@ class _MapContainerState extends State<MapContainer> {
   }
 
 
-  Future<void> _addMarker(Set<Marker> newMarkers, dynamic entry) async {
+  Future<void> _addMarker(Set<Marker> newMarkers, dynamic entry, String markerId) async {
     newMarkers.add(
       Marker(
         icon: MarkerProvider().getMarker(entry.detail) ?? BitmapDescriptor.defaultMarker,
-        markerId: MarkerId(entry.time),
+        markerId: MarkerId(markerId),
         position: LatLng(entry.latitude, entry.longitude),
         onTap: () {
           _customInfoWindowController.addInfoWindow!(
@@ -71,12 +71,7 @@ class _MapContainerState extends State<MapContainer> {
             ),
             LatLng(entry.latitude, entry.longitude),
           );
-          print('Marker tapped! ${entry.latitude}, ${entry.longitude}');
         },
-        // infoWindow: InfoWindow(
-        //   title: 'Incident Category: ${entry.category}',
-        //   snippet: 'Detail: ${entry.detail}, Is Crime: ${entry.isCrime}',
-        // ),
       ),
     );
   }
@@ -84,7 +79,7 @@ class _MapContainerState extends State<MapContainer> {
   void updateMarkers() {
     Set<Marker> newMarkers = {};
     widget.logMap.forEach((key, value) {
-      _addMarker(newMarkers, incidentMap[key]);
+      _addMarker(newMarkers, incidentMap[key], key);
     });
     setState(() {
       markers = newMarkers;
