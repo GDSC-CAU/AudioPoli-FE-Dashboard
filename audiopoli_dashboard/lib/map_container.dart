@@ -65,7 +65,7 @@ class _MapContainerState extends State<MapContainer> {
         position: LatLng(entry.latitude, entry.longitude),
         onTap: () {
           _customInfoWindowController.addInfoWindow!(
-            CustomInfoWindowWidget(data: entry,),
+            CustomInfoWindowWidget(data: entry, controller: _customInfoWindowController,),
             LatLng(entry.latitude, entry.longitude),
           );
         },
@@ -125,9 +125,6 @@ class _MapContainerState extends State<MapContainer> {
                     _customInfoWindowController.googleMapController = controller;
                     _onMapCreated(controller);
                   },
-                  onTap: (LatLng latLng) {
-                    _customInfoWindowController.hideInfoWindow!();
-                  },
                   initialCameraPosition: CameraPosition(
                     target: _center,
                     zoom: 17.0,
@@ -140,7 +137,7 @@ class _MapContainerState extends State<MapContainer> {
                 CustomInfoWindow(
                   controller: _customInfoWindowController,
                   height: 100,
-                  width: 150,
+                  width: 270,
                   offset: 70,
                 ),
               ]

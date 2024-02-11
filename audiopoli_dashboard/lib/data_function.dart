@@ -5,7 +5,7 @@ class DataFunction {
       2: "Fire Safety",
       3: "Accident Occurrence",
       4: "Natural Disaster",
-      5: "General (Emergency)"
+      5: "General Emergency"
     };
     return map[category];
   }
