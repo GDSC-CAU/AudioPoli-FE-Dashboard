@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:audiopoli_dashboard/styled_container.dart';
+import './custom_info_window.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -18,19 +19,21 @@ class MapContainer extends StatefulWidget {
 }
 
 class _MapContainerState extends State<MapContainer> {
+  late Future<void> _loadMapFuture;
+
   late GoogleMapController mapController;
+
   var incidentMap = <String, dynamic>{};
-  late Future<void> _loadMapFuture; // API 로딩을 위한 Future 객체를 저장할 변수
+  Set<Marker> markers = {};
 
   GoogleMapsFlutterPlatform mapsImplementation = GoogleMapsFlutterPlatform.instance =  google_map_flutter.GoogleMapsPlugin();
+  CustomInfoWindowController _customInfoWindowController = CustomInfoWindowController();
 
   final LatLng _center = const LatLng(37.5058, 126.956);
-  Set<Marker> markers = {};
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
-
 
   @override
   void initState() {
@@ -58,10 +61,20 @@ class _MapContainerState extends State<MapContainer> {
         icon: MarkerProvider().getMarker(entry.detail) ?? BitmapDescriptor.defaultMarker,
         markerId: MarkerId(entry.time),
         position: LatLng(entry.latitude, entry.longitude),
-        infoWindow: InfoWindow(
-          title: 'Incident Category: ${entry.category}',
-          snippet: 'Detail: ${entry.detail}, Is Crime: ${entry.isCrime}',
-        ),
+        onTap: () {
+          _customInfoWindowController.addInfoWindow!(
+            Container(
+              child: Text("커스텀 정보 창 내용"),
+              // 커스텀 위젯 구성
+            ),
+            LatLng(entry.latitude, entry.longitude),
+          );
+          print('Marker tapped! ${entry.latitude}, ${entry.longitude}');
+        },
+        // infoWindow: InfoWindow(
+        //   title: 'Incident Category: ${entry.category}',
+        //   snippet: 'Detail: ${entry.detail}, Is Crime: ${entry.isCrime}',
+        // ),
       ),
     );
   }
@@ -111,13 +124,29 @@ class _MapContainerState extends State<MapContainer> {
         future: _loadMapFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return GoogleMap(
-              onMapCreated: _onMapCreated,
-              initialCameraPosition: CameraPosition(
-                target: _center,
-                zoom: 17.0,
-              ),
-              markers: markers,
+            return Stack(
+              children: <Widget> [
+                CustomInfoWindow(
+                  controller: _customInfoWindowController,
+                  height: 75,
+                  width: 150,
+                  offset: 50,
+                ),
+                GoogleMap(
+                  onMapCreated: (GoogleMapController controller) {
+                    _customInfoWindowController.googleMapController = controller;
+                    _onMapCreated(controller);
+                  },
+                  onTap: (LatLng latLng) {
+                    _customInfoWindowController.hideInfoWindow!();
+                  },
+                  initialCameraPosition: CameraPosition(
+                    target: _center,
+                    zoom: 17.0,
+                  ),
+                  markers: markers,
+                ),
+              ]
             );
           } else {
             return const CircularProgressIndicator();

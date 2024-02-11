@@ -1,9 +1,6 @@
 import 'dart:async';
-
-import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:universal_html/js.dart' as js;
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GoogleMapApiLoader {
 
