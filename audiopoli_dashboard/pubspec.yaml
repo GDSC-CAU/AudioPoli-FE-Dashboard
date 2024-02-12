@@ -45,6 +45,7 @@ dependencies:
   firebase_database: ^10.4.0
   just_audio: ^0.9.36
   universal_html: ^2.2.4
+  firebase_storage: ^11.6.5
 
 dev_dependencies:
   flutter_test:

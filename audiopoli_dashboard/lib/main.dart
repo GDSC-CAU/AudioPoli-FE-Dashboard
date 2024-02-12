@@ -256,30 +256,30 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(kToolbarHeight),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 1.5,
-                  blurRadius: 1.5,
-                  offset: const Offset(0, 1.5),
-                ),
-              ],
-            ),
-            child: AppBar(
-              backgroundColor: Colors.white,
-              centerTitle: false,
-              leading: Container(color: Colors.white, child: Image.asset("img/logo.png"),),
-              titleTextStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22.0),
-              title: const Text("AudioPoli"),
-            ),
-          ),
-        ),
+        // appBar: PreferredSize(
+        //   preferredSize: const Size.fromHeight(kToolbarHeight),
+        //   child: Container(
+        //     decoration: BoxDecoration(
+        //       color: Colors.white,
+        //       borderRadius: BorderRadius.circular(10),
+        //       boxShadow: [
+        //         BoxShadow(
+        //           color: Colors.grey.withOpacity(0.5),
+        //           spreadRadius: 1.5,
+        //           blurRadius: 1.5,
+        //           offset: const Offset(0, 1.5),
+        //         ),
+        //       ],
+        //     ),
+        //     child: AppBar(
+        //       backgroundColor: Colors.white,
+        //       centerTitle: false,
+        //       leading: Container(color: Colors.white, child: Image.asset("img/logo.png"),),
+        //       titleTextStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22.0),
+        //       title: const Text("AudioPoli"),
+        //     ),
+        //   ),
+        // ),
         body: Column(
           children: [
             Expanded(

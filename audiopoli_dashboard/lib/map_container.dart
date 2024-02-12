@@ -136,7 +136,7 @@ class _MapContainerState extends State<MapContainer> {
                 ),
                 CustomInfoWindow(
                   controller: _customInfoWindowController,
-                  height: 100,
+                  height: 140,
                   width: 270,
                   offset: 70,
                 ),

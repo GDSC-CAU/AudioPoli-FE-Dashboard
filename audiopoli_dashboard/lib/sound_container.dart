@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class SoundContainer extends StatefulWidget {
   const SoundContainer({Key? key}) : super(key: key);
@@ -21,9 +22,18 @@ class _SoundContainerState extends State<SoundContainer> {
     initAudioPlayer();
   }
 
+  Future<String> getAudioUrl(String filePath) async {
+    String downloadUrl = await FirebaseStorage.instance
+        .ref(filePath)
+        .getDownloadURL();
+    return downloadUrl;
+  }
+
   Future<void> initAudioPlayer() async {
+    String filePath = '';
+    String audioUrl = await getAudioUrl(filePath);
     try {
-      await audioPlayer.setAsset('assets/audio/sample_audio.wav');
+      await audioPlayer.setUrl(audioUrl);
       audioPlayer.durationStream.listen((duration) {
         setState(() {
           totalDuration = duration?.inMilliseconds.toDouble() ?? 0.0;
