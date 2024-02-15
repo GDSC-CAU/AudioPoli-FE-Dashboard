@@ -16,6 +16,14 @@ class CustomInfoWindowWidget extends StatefulWidget {
 }
 
 class _CustomInfoWindowWidgetState extends State<CustomInfoWindowWidget> {
+
+  String SetCaseStatus() {
+    if(widget.data.departureTime[0] == '9')
+      return 'Waiting';
+    else
+      return 'error';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -60,7 +68,17 @@ class _CustomInfoWindowWidgetState extends State<CustomInfoWindowWidget> {
             ),
             SoundContainer(),
             Container(
-              padding: EdgeInsets.all(5),
+              alignment: Alignment.centerLeft,
+              padding: EdgeInsets.only(left: 10),
+              child: Text(
+                  style: TextStyle(
+                    fontSize: 12,
+                  ),
+                  'Status: ' + SetCaseStatus()
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.all(10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

@@ -125,8 +125,8 @@ void sendDataToDB() {
       detail: detail,
       isCrime: false,
       id: Random().nextInt(10000),
-      departureTime: "00:00:00",
-      caseEndTime: "11:11:11"
+      departureTime: "99:99:99",
+      caseEndTime: "99:99:99"
   );
 
   final ref = FirebaseDatabase.instance.ref('/');
