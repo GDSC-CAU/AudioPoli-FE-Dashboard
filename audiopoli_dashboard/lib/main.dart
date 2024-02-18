@@ -16,7 +16,7 @@ import 'map_container.dart';
 var now = DateTime.now();
 // "date": DateFormat('yyyy-MM-dd').format(now),
 
-IncidentData sampleData = IncidentData(date: DateFormat('yyyy-MM-dd').format(now), time: DateFormat('kk:mm:ss').format(now), latitude: 37.5058, longitude: 126.956, sound: "대충 base64", category: 1, detail: 5, isCrime: false, id: 35, departureTime: "", caseEndTime: "");
+IncidentData sampleData = IncidentData(date: DateFormat('yyyy-MM-dd').format(now), time: DateFormat('kk:mm:ss').format(now), latitude: 37.5058, longitude: 126.956, sound: "대충 base64", category: 1, detail: 5, isCrime: -1, id: 35, departureTime: "", caseEndTime: "");
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -46,7 +46,7 @@ bool compareDate(String date) {
 
 void updateDepartureTime(IncidentData data, String time)
 {
-  final ref = FirebaseDatabase.instance.ref("/${data.id.toString()}");
+  final ref = FirebaseDatabase.instance.ref("/crime/${data.id.toString()}");
 
   ref.update({"departureTime": time})
       .then((_) {
@@ -63,7 +63,7 @@ void updateDepartureTime(IncidentData data, String time)
 
 void updateCaseEndTime(IncidentData data, String time)
 {
-  final ref = FirebaseDatabase.instance.ref("/${data.id.toString()}");
+  final ref = FirebaseDatabase.instance.ref("/crime/${data.id.toString()}");
 
   ref.update({"caseEndTime": time})
       .then((_) {
@@ -78,8 +78,8 @@ void updateCaseEndTime(IncidentData data, String time)
   });
 }
 
-void updateIsCrime(IncidentData data, bool tf) {
-  final ref = FirebaseDatabase.instance.ref("/${data.id.toString()}");
+void updateIsCrime(IncidentData data, int tf) {
+  final ref = FirebaseDatabase.instance.ref("/crime/${data.id.toString()}");
 
   ref.update({"isCrime": tf})
       .then((_) {
@@ -121,13 +121,13 @@ void sendDataToDB() {
       sound: "대충 base64",
       category: category,
       detail: detail,
-      isCrime: false,
+      isCrime: -1,
       id: Random().nextInt(10000),
       departureTime: "99:99:99",
       caseEndTime: "99:99:99"
   );
 
-  final ref = FirebaseDatabase.instance.ref('/');
+  final ref = FirebaseDatabase.instance.ref('/crime');
   final Map<String, Map> updates = {};
   updates[sampleData.id.toString()] = sampleData.toMap();
   ref.update(updates)
@@ -146,7 +146,7 @@ void sendDataToDB() {
 }
 
 void deleteRecentData() {
-  final DatabaseReference ref = FirebaseDatabase.instance.ref("/");
+  final DatabaseReference ref = FirebaseDatabase.instance.ref("/crime");
 
   // 가장 최근 항목에 대한 쿼리 생성
   Query lastItemQuery = ref.orderByKey().limitToLast(1);
@@ -183,7 +183,7 @@ void deleteRecentData() {
 }
 
 class _MyAppState extends State<MyApp> {
-  final ref = FirebaseDatabase.instance.ref('/');
+  final ref = FirebaseDatabase.instance.ref('/crime/');
   var logMap = <String, dynamic>{};
   var yesterdayCrime = List<int>.filled(7, 0);
   var yesterdayTime = List<int>.filled(24,0);
