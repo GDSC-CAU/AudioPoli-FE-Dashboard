@@ -43,7 +43,7 @@ app.*.map.json
 /android/app/release
 
 assets/.env
-assets/.wav
+assets/audio/.wav
 
 android/app/google-services.json
 ios/Runner/GoogleService-Info.plist

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-
 import 'package:audiopoli_dashboard/log_container.dart';
 import 'package:audiopoli_dashboard/incident_data.dart';
 import 'package:audiopoli_dashboard/time_container.dart';
@@ -10,9 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import './styled_container.dart';
+import 'custom_marker_provider.dart';
 import 'firebase_options.dart';
 import 'package:firebase_database/firebase_database.dart';
-
 import 'map_container.dart';
 var now = DateTime.now();
 // "date": DateFormat('yyyy-MM-dd').format(now),
@@ -22,7 +21,7 @@ IncidentData sampleData = IncidentData(date: DateFormat('yyyy-MM-dd').format(now
 void main() async {
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
-  sendDataToDB();
+  await MarkerProvider().loadCustomMarker();
   runApp(const MyApp());
 }
 
@@ -103,7 +102,7 @@ void sendDataToDB() {
   final time = timeFormatter.format(now);
   final latitude = double.parse((Random().nextDouble() * (37.506700 - 37.504241) + 37.504241).toStringAsFixed(6));
   final longitude = double.parse((Random().nextDouble() * (126.959567 - 126.951557) + 126.951557).toStringAsFixed(6));
-  final detail = Random().nextInt(16) + 1;
+  final detail = Random().nextInt(14) + 1;
   Map<int, int> detailToCategory = {
     1: 1, 2: 1, 3: 1, 4: 1,
     5: 2, 6: 2, 7: 2, 8: 2, 9: 2,
@@ -124,8 +123,8 @@ void sendDataToDB() {
       detail: detail,
       isCrime: -1,
       id: Random().nextInt(10000),
-      departureTime: "00:00:00",
-      caseEndTime: "11:11:11"
+      departureTime: "99:99:99",
+      caseEndTime: "99:99:99"
   );
 
   final ref = FirebaseDatabase.instance.ref('/crime');
@@ -255,30 +254,30 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(kToolbarHeight),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 1.5,
-                  blurRadius: 1.5,
-                  offset: const Offset(0, 1.5),
-                ),
-              ],
-            ),
-            child: AppBar(
-              backgroundColor: Colors.white,
-              centerTitle: false,
-              leading: Container(color: Colors.white, child: Image.asset("img/logo.png"),),
-              titleTextStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22.0),
-              title: const Text("AudioPoli"),
-            ),
-          ),
-        ),
+        // appBar: PreferredSize(
+        //   preferredSize: const Size.fromHeight(kToolbarHeight),
+        //   child: Container(
+        //     decoration: BoxDecoration(
+        //       color: Colors.white,
+        //       borderRadius: BorderRadius.circular(10),
+        //       boxShadow: [
+        //         BoxShadow(
+        //           color: Colors.grey.withOpacity(0.5),
+        //           spreadRadius: 1.5,
+        //           blurRadius: 1.5,
+        //           offset: const Offset(0, 1.5),
+        //         ),
+        //       ],
+        //     ),
+        //     child: AppBar(
+        //       backgroundColor: Colors.white,
+        //       centerTitle: false,
+        //       leading: Container(color: Colors.white, child: Image.asset("img/logo.png"),),
+        //       titleTextStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22.0),
+        //       title: const Text("AudioPoli"),
+        //     ),
+        //   ),
+        // ),
         body: Column(
           children: [
             Expanded(

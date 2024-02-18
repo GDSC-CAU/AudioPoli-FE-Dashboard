@@ -1,29 +1,16 @@
 import 'dart:async';
+import 'package:audiopoli_dashboard/custom_info_window_widget.dart';
+import 'package:audiopoli_dashboard/sound_container.dart';
 import 'package:audiopoli_dashboard/styled_container.dart';
+import './custom_info_window.dart';
 import 'package:flutter/foundation.dart';
-import 'package:universal_html/js.dart' as js;
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_flutter_web/google_maps_flutter_web.dart' as google_map_flutter;
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import './incident_data.dart';
-
-Future<void> loadGoogleMapsApi() {
-  var completer = Completer<void>();
-
-  String apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? "API 키가 없습니다";
-  js.context.callMethod('setGoogleMapsApiKey', [apiKey]);
-
-  Timer.periodic(const Duration(milliseconds: 100), (Timer timer) {
-    if (js.context.hasProperty('google')) {
-      timer.cancel();
-      completer.complete();
-    }
-  });
-
-  return completer.future;
-}
+import 'custom_marker_provider.dart';
+import 'google_map_api_loader.dart';
 
 class MapContainer extends StatefulWidget {
   const MapContainer({super.key, required this.logMap});
@@ -34,26 +21,28 @@ class MapContainer extends StatefulWidget {
 }
 
 class _MapContainerState extends State<MapContainer> {
+  late Future<void> _loadMapFuture;
+
   late GoogleMapController mapController;
 
   var incidentMap = <String, dynamic>{};
+  Set<Marker> markers = {};
 
   GoogleMapsFlutterPlatform mapsImplementation = GoogleMapsFlutterPlatform.instance =  google_map_flutter.GoogleMapsPlugin();
+  final CustomInfoWindowController _customInfoWindowController = CustomInfoWindowController();
 
   final LatLng _center = const LatLng(37.5058, 126.956);
-
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
 
-  Set<Marker> markers = {};
-
   @override
   void initState() {
     super.initState();
+    _loadMapFuture = GoogleMapApiLoader().loadGoogleMapApi();
     updateData();
-    _updateMarkers();
+    updateMarkers();
   }
 
   @override
@@ -64,28 +53,30 @@ class _MapContainerState extends State<MapContainer> {
     }
     super.didUpdateWidget(oldWidget);
     updateData();
-    _updateMarkers();
+    updateMarkers();
   }
 
-  void _addMarker(Set<Marker> newMarkers, dynamic entry) {
-    setState(() {
-      newMarkers.add(
-        Marker(
-          markerId: MarkerId(entry.time),
-          position: LatLng(entry.latitude, entry.longitude),
-          infoWindow: InfoWindow(
-            title: 'Incident Category: ${entry.category}',
-            snippet: 'Detail: ${entry.detail}, Is Crime: ${entry.isCrime}',
-          ),
-        ),
-      );
-    });
+
+  Future<void> _addMarker(Set<Marker> newMarkers, dynamic entry, String markerId) async {
+    newMarkers.add(
+      Marker(
+        icon: MarkerProvider().getMarker(entry.detail) ?? BitmapDescriptor.defaultMarker,
+        markerId: MarkerId(markerId),
+        position: LatLng(entry.latitude, entry.longitude),
+        onTap: () {
+          _customInfoWindowController.addInfoWindow!(
+            CustomInfoWindowWidget(data: entry, controller: _customInfoWindowController,),
+            LatLng(entry.latitude, entry.longitude),
+          );
+        },
+      ),
+    );
   }
 
-  void _updateMarkers() {
+  void updateMarkers() {
     Set<Marker> newMarkers = {};
     widget.logMap.forEach((key, value) {
-      _addMarker(newMarkers, incidentMap[key]);
+      _addMarker(newMarkers, incidentMap[key], key);
     });
     setState(() {
       markers = newMarkers;
@@ -124,16 +115,32 @@ class _MapContainerState extends State<MapContainer> {
   Widget build(BuildContext context) {
     return StyledContainer(
       widget:FutureBuilder(
-        future: loadGoogleMapsApi(),
+        future: _loadMapFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return GoogleMap(
-              onMapCreated: _onMapCreated,
-              initialCameraPosition: CameraPosition(
-                target: _center,
-                zoom: 17.0,
-              ),
-              markers: markers,
+            return Stack(
+              children: <Widget> [
+                GoogleMap(
+                  onMapCreated: (GoogleMapController controller) {
+                    _customInfoWindowController.googleMapController = controller;
+                    _onMapCreated(controller);
+                  },
+                  initialCameraPosition: CameraPosition(
+                    target: _center,
+                    zoom: 17.0,
+                  ),
+                  onCameraMove: (CameraPosition position) {
+                    _customInfoWindowController.onCameraMove!();
+                  },
+                  markers: markers,
+                ),
+                CustomInfoWindow(
+                  controller: _customInfoWindowController,
+                  height: 140,
+                  width: 270,
+                  offset: 70,
+                ),
+              ]
             );
           } else {
             return const CircularProgressIndicator();
