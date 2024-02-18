@@ -120,6 +120,15 @@ class _MapContainerState extends State<MapContainer> {
                   onMapCreated: (GoogleMapController controller) {
                     _customInfoWindowController.googleMapController = controller;
                     _onMapCreated(controller);
+                    controller.setMapStyle("""[
+                      {
+                        "featureType": "poi",
+                        "elementType": "labels",
+                        "stylers": [
+                          { "visibility": "off" }
+                        ]
+                      }
+                    ]""");
                   },
                   initialCameraPosition: CameraPosition(
                     target: _center,
