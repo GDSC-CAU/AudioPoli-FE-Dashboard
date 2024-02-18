@@ -254,30 +254,38 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        // appBar: PreferredSize(
-        //   preferredSize: const Size.fromHeight(kToolbarHeight),
-        //   child: Container(
-        //     decoration: BoxDecoration(
-        //       color: Colors.white,
-        //       borderRadius: BorderRadius.circular(10),
-        //       boxShadow: [
-        //         BoxShadow(
-        //           color: Colors.grey.withOpacity(0.5),
-        //           spreadRadius: 1.5,
-        //           blurRadius: 1.5,
-        //           offset: const Offset(0, 1.5),
-        //         ),
-        //       ],
-        //     ),
-        //     child: AppBar(
-        //       backgroundColor: Colors.white,
-        //       centerTitle: false,
-        //       leading: Container(color: Colors.white, child: Image.asset("img/logo.png"),),
-        //       titleTextStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22.0),
-        //       title: const Text("AudioPoli"),
-        //     ),
-        //   ),
-        // ),
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 1.5,
+                  blurRadius: 1.5,
+                  offset: const Offset(0, 1.5),
+                ),
+              ],
+            ),
+            child: AppBar(
+              backgroundColor: Colors.white,
+              surfaceTintColor: Colors.white,
+              centerTitle: false,
+              leadingWidth: 500,
+              leading: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Container(padding: EdgeInsets.all(3), child: Image.asset("img/logo.png")),
+                  Image.asset("img/logo_text.png", height: 28,),
+                ]
+              ),
+              // titleTextStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 32.0),
+              // title: const Text("AUDIO POLI"),
+            ),
+          ),
+        ),
         body: Column(
           children: [
             Expanded(
