@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-
 import 'package:audiopoli_dashboard/log_container.dart';
 import 'package:audiopoli_dashboard/incident_data.dart';
 import 'package:audiopoli_dashboard/time_container.dart';
