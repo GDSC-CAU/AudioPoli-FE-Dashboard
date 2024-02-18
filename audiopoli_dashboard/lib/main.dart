@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import './styled_container.dart';
+import 'category_statistic_container.dart';
 import 'custom_marker_provider.dart';
 import 'firebase_options.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -196,7 +197,8 @@ class _MyAppState extends State<MyApp> {
 
 
   var sampleYesterdayTime = List<int>.filled(24, 0);
-  void setSampleTimeList() {
+  var sampleYesterdayCrime = List<int>.filled(7, 0);
+  void setSampleList() {
     sampleYesterdayTime[1] = 5;
     sampleYesterdayTime[3] = 3;
     sampleYesterdayTime[5] = 8;
@@ -209,6 +211,13 @@ class _MyAppState extends State<MyApp> {
     sampleYesterdayTime[19] = 2;
     sampleYesterdayTime[21] = 6;
     sampleYesterdayTime[23] = 4;
+
+    sampleYesterdayCrime[1] = 3;
+    sampleYesterdayCrime[2] = 2;
+    sampleYesterdayCrime[3] = 1;
+    sampleYesterdayCrime[4] = 5;
+    sampleYesterdayCrime[5] = 4;
+
   }
 
   @override
@@ -217,7 +226,7 @@ class _MyAppState extends State<MyApp> {
     // updateIsCrime(sampleData, true);
     // updateDepartureTime(sampleData, "23:40");
     // updateCaseEndTime(sampleData, "2:20");
-    setSampleTimeList();
+    setSampleList();
     ref.onValue.listen((DatabaseEvent event) {
       loadDataFromDB(event);
       if (kDebugMode) {
@@ -346,7 +355,19 @@ class _MyAppState extends State<MyApp> {
                           ),
                         ),
                         Expanded(
-                          child: StyledContainer(widget: Container(),),
+                          child: StyledContainer(
+                            widget: StreamBuilder<List<int>>(
+                                stream: _todayCrimeController.stream,
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    List<int> updatedCrime = snapshot.data!;
+                                    return CategoryStatisticContainer(todayList: updatedCrime, yesterdayList: sampleYesterdayCrime);
+                                  } else {
+                                    return StyledContainer(widget: CircularProgressIndicator());
+                                  }
+                                }
+                            ),
+                          ),
                         ),
                       ],
                     ),
