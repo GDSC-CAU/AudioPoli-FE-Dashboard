@@ -1,3 +1,4 @@
+import 'package:audiopoli_dashboard/data_function.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -35,6 +36,7 @@ class _CategoryStatisticContainerState extends State<CategoryStatisticContainer>
       primaryXAxis: CategoryAxis(
         interval: 1,
         edgeLabelPlacement: EdgeLabelPlacement.shift,
+        labelStyle: TextStyle(fontWeight: FontWeight.bold),
       ),
       primaryYAxis: NumericAxis(
         labelFormat: '{value}',
@@ -43,14 +45,14 @@ class _CategoryStatisticContainerState extends State<CategoryStatisticContainer>
       series: <CartesianSeries>[
         ColumnSeries<CategoryData, String>(
           dataSource: yesterdayData,
-          xValueMapper: (CategoryData incidents, _) => incidents.category,
+          xValueMapper: (CategoryData incidents, _) => DataFunction.categoryToGraph(incidents.category),
           yValueMapper: (CategoryData incidents, _) => incidents.incidents,
           pointColorMapper: (CategoryData incidents, _) => incidents.color.withAlpha(95),
           name: 'Yesterday',
         ),
         ColumnSeries<CategoryData, String>(
           dataSource: todayData,
-          xValueMapper: (CategoryData incidents, _) => incidents.category,
+          xValueMapper: (CategoryData incidents, _) => DataFunction.categoryToGraph(incidents.category),
           yValueMapper: (CategoryData incidents, _) => incidents.incidents,
           pointColorMapper: (CategoryData incidents, _) => incidents.color,
           name: 'Today',
@@ -69,7 +71,7 @@ class _CategoryStatisticContainerState extends State<CategoryStatisticContainer>
 }
 
 class CategoryData {
-  final String category;
+  final int category;
   final int incidents;
   final Color color;
 
@@ -95,7 +97,7 @@ class CategoryData {
         case 5:
           _color = Colors.green;
       }
-      categoryDataList.add(CategoryData(i.toString(), yesterdayCategory[i], _color));
+      categoryDataList.add(CategoryData(i, yesterdayCategory[i], _color));
       print(yesterdayCategory[i]);
     }
     return categoryDataList;

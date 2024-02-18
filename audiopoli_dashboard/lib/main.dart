@@ -340,6 +340,7 @@ class _MyAppState extends State<MyApp> {
                     child: Column(
                       children: [
                         Expanded(
+                          flex: 2,
                           child: StyledContainer(
                             widget: StreamBuilder<List<int>>(
                                 stream: _todayTimeController.stream,
@@ -355,6 +356,7 @@ class _MyAppState extends State<MyApp> {
                           ),
                         ),
                         Expanded(
+                          flex: 3,
                           child: StyledContainer(
                             widget: StreamBuilder<List<int>>(
                                 stream: _todayCrimeController.stream,
