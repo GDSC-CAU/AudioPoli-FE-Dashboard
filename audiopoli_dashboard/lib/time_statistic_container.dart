@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-class StatisticContainer extends StatefulWidget {
-  StatisticContainer({super.key, required this.yesterdayList, required this.todayList});
+class TimeStatisticContainer extends StatefulWidget {
+  TimeStatisticContainer({super.key, required this.yesterdayList, required this.todayList});
   final List<int> yesterdayList;
   final List<int> todayList;
   @override
-  State<StatisticContainer> createState() => _StatisticContainerState();
+  State<TimeStatisticContainer> createState() => _TimeStatisticContainerState();
 }
 
-class _StatisticContainerState extends State<StatisticContainer> {
+class _TimeStatisticContainerState extends State<TimeStatisticContainer> {
   late List<TimeData> yesterdayData;
   late List<TimeData> todayData;
 
@@ -18,6 +18,15 @@ class _StatisticContainerState extends State<StatisticContainer> {
     super.initState();
     yesterdayData = TimeData.createTimeDataList(widget.yesterdayList);
     todayData = TimeData.createTimeDataList(widget.todayList);
+  }
+
+  @override
+  void didUpdateWidget(TimeStatisticContainer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    setState(() {
+      yesterdayData = TimeData.createTimeDataList(widget.yesterdayList);
+      todayData = TimeData.createTimeDataList(widget.todayList);
+    });
   }
 
   @override

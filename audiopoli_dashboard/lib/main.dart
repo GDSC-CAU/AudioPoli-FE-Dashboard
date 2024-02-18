@@ -190,6 +190,10 @@ class _MyAppState extends State<MyApp> {
   var todayCrime = List<int>.filled(7, 0);
   var todayTime = List<int>.filled(24,0);
   final StreamController<Map<String, dynamic>> _logMapController = StreamController.broadcast();
+  final StreamController<List<int>> _todayCrimeController = StreamController.broadcast();
+  final StreamController<List<int>> _todayTimeController = StreamController.broadcast();
+
+
 
   var sampleYesterdayTime = List<int>.filled(24, 0);
   void setSampleTimeList() {
@@ -228,6 +232,8 @@ class _MyAppState extends State<MyApp> {
     {
       var data = snapshot.value;
       Map<String, IncidentData> newLogMap = {};
+      List<int> newTodayCrime = List<int>.filled(7, 0);
+      List<int> newTodayTime = List<int>.filled(24, 0);
       if(data is Map) {
         data.forEach((key, value) {
           IncidentData incident = IncidentData(
@@ -245,9 +251,9 @@ class _MyAppState extends State<MyApp> {
           );
           newLogMap[key] = incident;
           if(compareDate(value['date']) == 0) {
-            todayCrime[incident.category]++;
-            todayTime[int.parse(incident.time.split(":")[0])]++;
-            print(todayTime);
+            newTodayCrime[incident.category]++;
+            newTodayTime[int.parse(incident.time.split(":")[0])]++;
+
           }
           if(compareDate(value['date']) == 1) {
             yesterdayCrime[incident.category]++;
@@ -257,8 +263,13 @@ class _MyAppState extends State<MyApp> {
       }
       setState(() {
         logMap = newLogMap;
+        todayCrime = newTodayCrime;
+        todayTime = newTodayTime;
       });
       _logMapController.add(logMap);
+      _todayCrimeController.add(todayCrime);
+      _todayTimeController.add(todayTime);
+      print(todayTime);
     } else {
       if (kDebugMode) {
         print('No data available');
@@ -269,6 +280,8 @@ class _MyAppState extends State<MyApp> {
   @override
   void dispose() {
     _logMapController.close();
+    _todayCrimeController.close();
+    _todayTimeController.close();
     super.dispose();
   }
 
@@ -318,7 +331,19 @@ class _MyAppState extends State<MyApp> {
                     child: Column(
                       children: [
                         Expanded(
-                          child: StyledContainer(widget: StatisticContainer(todayList: todayTime,yesterdayList: sampleYesterdayTime,),),
+                          child: StyledContainer(
+                            widget: StreamBuilder<List<int>>(
+                                stream: _todayTimeController.stream,
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    List<int> updatedTime = snapshot.data!;
+                                    return TimeStatisticContainer(todayList: updatedTime, yesterdayList: sampleYesterdayTime);
+                                  } else {
+                                    return StyledContainer(widget: CircularProgressIndicator());
+                                  }
+                                }
+                            ),
+                          ),
                         ),
                         Expanded(
                           child: StyledContainer(widget: Container(),),
