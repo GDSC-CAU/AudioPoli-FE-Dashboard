@@ -9,6 +9,16 @@ class DataFunction {
     };
     return map[category];
   }
+  static String? categoryToGraph(int category) {
+    Map<int, String> map = {
+      1: "Public\nSafety",
+      2: "Fire\nSafety",
+      3: "Accident\nOccurrence",
+      4: "Natural\nDisaster",
+      5: "General\nEmergency"
+    };
+    return map[category];
+  }
  static String? detailToString(int detail) {
    Map<int, String> map = {
      1: "Sex Crime",

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:audiopoli_dashboard/log_container.dart';
 import 'package:audiopoli_dashboard/incident_data.dart';
+import 'package:audiopoli_dashboard/time_statistic_container.dart';
 import 'package:audiopoli_dashboard/time_container.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import './styled_container.dart';
+import 'category_statistic_container.dart';
 import 'custom_marker_provider.dart';
 import 'firebase_options.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -16,7 +18,7 @@ import 'map_container.dart';
 var now = DateTime.now();
 // "date": DateFormat('yyyy-MM-dd').format(now),
 
-IncidentData sampleData = IncidentData(date: DateFormat('yyyy-MM-dd').format(now), time: DateFormat('kk:mm:ss').format(now), latitude: 37.5058, longitude: 126.956, sound: "대충 base64", category: 1, detail: 5, isCrime: -1, id: 35, departureTime: "", caseEndTime: "");
+// IncidentData sampleData = IncidentData(date: DateFormat('yyyy-MM-dd').format(now), time: DateFormat('kk:mm:ss').format(now), latitude: 37.5058, longitude: 126.956, sound: "대충 base64", category: 1, detail: 5, isCrime: -1, id: 35, departureTime: "", caseEndTime: "");
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -32,7 +34,7 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-bool compareDate(String date) {
+int compareDate(String date) {
   List<String> yearMonthDay = date.split('-');
   var dateDate = DateTime(int.parse(yearMonthDay[0]), int.parse(yearMonthDay[1]), int.parse(yearMonthDay[2]) );
 
@@ -40,8 +42,7 @@ bool compareDate(String date) {
 
   Duration diff = nowDate.difference(dateDate);
 
-  if (diff.inDays == 1) { return true; }
-  else { return false; }
+  return diff.inDays;
 }
 
 void updateDepartureTime(IncidentData data, String time)
@@ -118,7 +119,7 @@ void sendDataToDB() {
       time: time,
       latitude: latitude,
       longitude: longitude,
-      sound: "대충 base64",
+      sound: "",
       category: category,
       detail: detail,
       isCrime: -1,
@@ -187,8 +188,37 @@ class _MyAppState extends State<MyApp> {
   var logMap = <String, dynamic>{};
   var yesterdayCrime = List<int>.filled(7, 0);
   var yesterdayTime = List<int>.filled(24,0);
+  var todayCrime = List<int>.filled(7, 0);
+  var todayTime = List<int>.filled(24,0);
   final StreamController<Map<String, dynamic>> _logMapController = StreamController.broadcast();
+  final StreamController<List<int>> _todayCrimeController = StreamController.broadcast();
+  final StreamController<List<int>> _todayTimeController = StreamController.broadcast();
 
+
+
+  var sampleYesterdayTime = List<int>.filled(24, 0);
+  var sampleYesterdayCrime = List<int>.filled(7, 0);
+  void setSampleList() {
+    sampleYesterdayTime[1] = 5;
+    sampleYesterdayTime[3] = 3;
+    sampleYesterdayTime[5] = 8;
+    sampleYesterdayTime[7] = 2;
+    sampleYesterdayTime[9] = 7;
+    sampleYesterdayTime[11] = 1;
+    sampleYesterdayTime[13] = 4;
+    sampleYesterdayTime[15] = 3;
+    sampleYesterdayTime[17] = 5;
+    sampleYesterdayTime[19] = 2;
+    sampleYesterdayTime[21] = 6;
+    sampleYesterdayTime[23] = 4;
+
+    sampleYesterdayCrime[1] = 3;
+    sampleYesterdayCrime[2] = 2;
+    sampleYesterdayCrime[3] = 1;
+    sampleYesterdayCrime[4] = 5;
+    sampleYesterdayCrime[5] = 4;
+
+  }
 
   @override
   void initState() {
@@ -196,6 +226,7 @@ class _MyAppState extends State<MyApp> {
     // updateIsCrime(sampleData, true);
     // updateDepartureTime(sampleData, "23:40");
     // updateCaseEndTime(sampleData, "2:20");
+    setSampleList();
     ref.onValue.listen((DatabaseEvent event) {
       loadDataFromDB(event);
       if (kDebugMode) {
@@ -210,6 +241,8 @@ class _MyAppState extends State<MyApp> {
     {
       var data = snapshot.value;
       Map<String, IncidentData> newLogMap = {};
+      List<int> newTodayCrime = List<int>.filled(7, 0);
+      List<int> newTodayTime = List<int>.filled(24, 0);
       if(data is Map) {
         data.forEach((key, value) {
           IncidentData incident = IncidentData(
@@ -226,7 +259,12 @@ class _MyAppState extends State<MyApp> {
               caseEndTime: value['caseEndTime']
           );
           newLogMap[key] = incident;
-          if(compareDate(value['date'])) {
+          if(compareDate(value['date']) == 0) {
+            newTodayCrime[incident.category]++;
+            newTodayTime[int.parse(incident.time.split(":")[0])]++;
+
+          }
+          if(compareDate(value['date']) == 1) {
             yesterdayCrime[incident.category]++;
             yesterdayTime[int.parse(incident.time.split(":")[0])]++;
           }
@@ -234,8 +272,13 @@ class _MyAppState extends State<MyApp> {
       }
       setState(() {
         logMap = newLogMap;
+        todayCrime = newTodayCrime;
+        todayTime = newTodayTime;
       });
       _logMapController.add(logMap);
+      _todayCrimeController.add(todayCrime);
+      _todayTimeController.add(todayTime);
+      print(todayTime);
     } else {
       if (kDebugMode) {
         print('No data available');
@@ -246,6 +289,8 @@ class _MyAppState extends State<MyApp> {
   @override
   void dispose() {
     _logMapController.close();
+    _todayCrimeController.close();
+    _todayTimeController.close();
     super.dispose();
   }
 
@@ -254,30 +299,38 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        // appBar: PreferredSize(
-        //   preferredSize: const Size.fromHeight(kToolbarHeight),
-        //   child: Container(
-        //     decoration: BoxDecoration(
-        //       color: Colors.white,
-        //       borderRadius: BorderRadius.circular(10),
-        //       boxShadow: [
-        //         BoxShadow(
-        //           color: Colors.grey.withOpacity(0.5),
-        //           spreadRadius: 1.5,
-        //           blurRadius: 1.5,
-        //           offset: const Offset(0, 1.5),
-        //         ),
-        //       ],
-        //     ),
-        //     child: AppBar(
-        //       backgroundColor: Colors.white,
-        //       centerTitle: false,
-        //       leading: Container(color: Colors.white, child: Image.asset("img/logo.png"),),
-        //       titleTextStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22.0),
-        //       title: const Text("AudioPoli"),
-        //     ),
-        //   ),
-        // ),
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 1.5,
+                  blurRadius: 1.5,
+                  offset: const Offset(0, 1.5),
+                ),
+              ],
+            ),
+            child: AppBar(
+              backgroundColor: Colors.white,
+              surfaceTintColor: Colors.white,
+              centerTitle: false,
+              leadingWidth: 500,
+              leading: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Container(padding: EdgeInsets.all(3), child: Image.asset("img/logo.png")),
+                  Image.asset("img/logo_text.png", height: 24,),
+                ]
+              ),
+              // titleTextStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 32.0),
+              // title: const Text("AUDIO POLI"),
+            ),
+          ),
+        ),
         body: Column(
           children: [
             Expanded(
@@ -287,12 +340,36 @@ class _MyAppState extends State<MyApp> {
                     child: Column(
                       children: [
                         Expanded(
-                          flex: 3,
-                          child: StyledContainer(widget: Container(),),
+                          flex: 2,
+                          child: StyledContainer(
+                            widget: StreamBuilder<List<int>>(
+                                stream: _todayTimeController.stream,
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    List<int> updatedTime = snapshot.data!;
+                                    return TimeStatisticContainer(todayList: updatedTime, yesterdayList: sampleYesterdayTime);
+                                  } else {
+                                    return StyledContainer(widget: CircularProgressIndicator());
+                                  }
+                                }
+                            ),
+                          ),
                         ),
                         Expanded(
                           flex: 3,
-                          child: StyledContainer(widget: Container(),),
+                          child: StyledContainer(
+                            widget: StreamBuilder<List<int>>(
+                                stream: _todayCrimeController.stream,
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    List<int> updatedCrime = snapshot.data!;
+                                    return CategoryStatisticContainer(todayList: updatedCrime, yesterdayList: sampleYesterdayCrime);
+                                  } else {
+                                    return StyledContainer(widget: CircularProgressIndicator());
+                                  }
+                                }
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -303,7 +380,7 @@ class _MyAppState extends State<MyApp> {
                     if (snapshot.hasData) {
                       final updatedMap = snapshot.data!;
                       return Expanded(
-                        flex: 3,
+                        flex: 2,
                         child: Stack(
                           children: [
                             MapContainer(logMap: updatedMap),
