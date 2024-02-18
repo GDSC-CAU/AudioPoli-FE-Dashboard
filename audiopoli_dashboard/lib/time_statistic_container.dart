@@ -81,7 +81,6 @@ class TimeData {
     for (int i = 0; i < yesterdayTime.length; i++) {
       String hourLabel = "${i.toString().padLeft(2, '0')}";
       timeDataList.add(TimeData(hourLabel, yesterdayTime[i]));
-      print(yesterdayTime[i]);
     }
     return timeDataList;
   }

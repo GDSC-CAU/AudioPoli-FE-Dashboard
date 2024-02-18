@@ -98,7 +98,6 @@ class CategoryData {
           _color = Colors.green;
       }
       categoryDataList.add(CategoryData(i, yesterdayCategory[i], _color));
-      print(yesterdayCategory[i]);
     }
     return categoryDataList;
   }

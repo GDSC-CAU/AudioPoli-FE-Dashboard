@@ -278,7 +278,6 @@ class _MyAppState extends State<MyApp> {
       _logMapController.add(logMap);
       _todayCrimeController.add(todayCrime);
       _todayTimeController.add(todayTime);
-      print(todayTime);
     } else {
       if (kDebugMode) {
         print('No data available');
