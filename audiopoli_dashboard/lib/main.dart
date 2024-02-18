@@ -12,7 +12,6 @@ import './styled_container.dart';
 import 'custom_marker_provider.dart';
 import 'firebase_options.dart';
 import 'package:firebase_database/firebase_database.dart';
-
 import 'map_container.dart';
 var now = DateTime.now();
 // "date": DateFormat('yyyy-MM-dd').format(now),
