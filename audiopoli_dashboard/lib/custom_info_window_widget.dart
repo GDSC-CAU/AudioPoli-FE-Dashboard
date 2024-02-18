@@ -20,12 +20,24 @@ class CustomInfoWindowWidget extends StatefulWidget {
 
 class _CustomInfoWindowWidgetState extends State<CustomInfoWindowWidget> {
 
-  String SetCaseStatus() {
-    if(widget.data.departureTime[0] == '9')
-      return 'Waiting';
-    else
-      return 'error';
+  String setCaseStatus() {
+    if (widget.data.isCrime == -1) {
+      return 'Verification Needed';
+    } else if (widget.data.isCrime == 0) {
+      return 'Not a Crime';
+    } else {
+      if(widget.data.departureTime[0] == '9') {
+        return 'Awaiting Departure';
+      } else {
+        if(widget.data.caseEndTime[0] == '9') {
+          return 'Departed';
+        } else {
+          return 'Case Closed';
+        }
+      }
+    }
   }
+
 
   void updateIsCrime(IncidentData data, int tf) {
     final ref = FirebaseDatabase.instance.ref("/crime/${data.id.toString()}");
@@ -93,7 +105,7 @@ class _CustomInfoWindowWidgetState extends State<CustomInfoWindowWidget> {
                   style: TextStyle(
                     fontSize: 12,
                   ),
-                  'Status: ' + SetCaseStatus()
+                  'Status: ' + setCaseStatus()
               ),
             ),
             Container(
