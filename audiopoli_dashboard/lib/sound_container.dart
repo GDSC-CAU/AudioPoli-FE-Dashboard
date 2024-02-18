@@ -4,7 +4,8 @@ import 'package:just_audio/just_audio.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class SoundContainer extends StatefulWidget {
-  const SoundContainer({Key? key}) : super(key: key);
+  SoundContainer({Key? key, required this.filePath}) : super(key: key);
+  final String filePath;
 
   @override
   State<SoundContainer> createState() => _SoundContainerState();
@@ -30,8 +31,7 @@ class _SoundContainerState extends State<SoundContainer> {
   }
 
   Future<void> initAudioPlayer() async {
-    String filePath = '';
-    String audioUrl = await getAudioUrl(filePath);
+    String audioUrl = await getAudioUrl(widget.filePath);
     try {
       await audioPlayer.setUrl(audioUrl);
       audioPlayer.durationStream.listen((duration) {

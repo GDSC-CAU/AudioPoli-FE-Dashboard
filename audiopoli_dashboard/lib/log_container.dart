@@ -153,7 +153,7 @@ class _LogContainerState extends State<LogContainer> {
                       DataCell(Text(entry.value.isCrime == true ? 'Yes' : 'No')),
                       DataCell(Text(entry.value.departureTime ?? '-')),
                       DataCell(Text(entry.value.caseEndTime ?? '-')),
-                      const DataCell(SoundContainer()),
+                      DataCell(SoundContainer(filePath: entry.value.sound,)),
                     ],
                   );
                 }).toList(),

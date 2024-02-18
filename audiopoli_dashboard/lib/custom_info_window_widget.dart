@@ -66,7 +66,7 @@ class _CustomInfoWindowWidgetState extends State<CustomInfoWindowWidget> {
                 ],
               ),
             ),
-            SoundContainer(),
+            SoundContainer(filePath: widget.data.sound,),
             Container(
               alignment: Alignment.centerLeft,
               padding: EdgeInsets.only(left: 10),

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:audiopoli_dashboard/log_container.dart';
 import 'package:audiopoli_dashboard/incident_data.dart';
+import 'package:audiopoli_dashboard/time_statistic_container.dart';
 import 'package:audiopoli_dashboard/time_container.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -16,7 +17,7 @@ import 'map_container.dart';
 var now = DateTime.now();
 // "date": DateFormat('yyyy-MM-dd').format(now),
 
-IncidentData sampleData = IncidentData(date: DateFormat('yyyy-MM-dd').format(now), time: DateFormat('kk:mm:ss').format(now), latitude: 37.5058, longitude: 126.956, sound: "대충 base64", category: 1, detail: 5, isCrime: -1, id: 35, departureTime: "", caseEndTime: "");
+// IncidentData sampleData = IncidentData(date: DateFormat('yyyy-MM-dd').format(now), time: DateFormat('kk:mm:ss').format(now), latitude: 37.5058, longitude: 126.956, sound: "대충 base64", category: 1, detail: 5, isCrime: -1, id: 35, departureTime: "", caseEndTime: "");
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -32,7 +33,7 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-bool compareDate(String date) {
+int compareDate(String date) {
   List<String> yearMonthDay = date.split('-');
   var dateDate = DateTime(int.parse(yearMonthDay[0]), int.parse(yearMonthDay[1]), int.parse(yearMonthDay[2]) );
 
@@ -40,8 +41,7 @@ bool compareDate(String date) {
 
   Duration diff = nowDate.difference(dateDate);
 
-  if (diff.inDays == 1) { return true; }
-  else { return false; }
+  return diff.inDays;
 }
 
 void updateDepartureTime(IncidentData data, String time)
@@ -118,7 +118,7 @@ void sendDataToDB() {
       time: time,
       latitude: latitude,
       longitude: longitude,
-      sound: "대충 base64",
+      sound: "",
       category: category,
       detail: detail,
       isCrime: -1,
@@ -187,8 +187,25 @@ class _MyAppState extends State<MyApp> {
   var logMap = <String, dynamic>{};
   var yesterdayCrime = List<int>.filled(7, 0);
   var yesterdayTime = List<int>.filled(24,0);
+  var todayCrime = List<int>.filled(7, 0);
+  var todayTime = List<int>.filled(24,0);
   final StreamController<Map<String, dynamic>> _logMapController = StreamController.broadcast();
 
+  var sampleYesterdayTime = List<int>.filled(24, 0);
+  void setSampleTimeList() {
+    sampleYesterdayTime[1] = 5;
+    sampleYesterdayTime[3] = 3;
+    sampleYesterdayTime[5] = 8;
+    sampleYesterdayTime[7] = 2;
+    sampleYesterdayTime[9] = 7;
+    sampleYesterdayTime[11] = 1;
+    sampleYesterdayTime[13] = 4;
+    sampleYesterdayTime[15] = 3;
+    sampleYesterdayTime[17] = 5;
+    sampleYesterdayTime[19] = 2;
+    sampleYesterdayTime[21] = 6;
+    sampleYesterdayTime[23] = 4;
+  }
 
   @override
   void initState() {
@@ -196,6 +213,7 @@ class _MyAppState extends State<MyApp> {
     // updateIsCrime(sampleData, true);
     // updateDepartureTime(sampleData, "23:40");
     // updateCaseEndTime(sampleData, "2:20");
+    setSampleTimeList();
     ref.onValue.listen((DatabaseEvent event) {
       loadDataFromDB(event);
       if (kDebugMode) {
@@ -226,7 +244,12 @@ class _MyAppState extends State<MyApp> {
               caseEndTime: value['caseEndTime']
           );
           newLogMap[key] = incident;
-          if(compareDate(value['date'])) {
+          if(compareDate(value['date']) == 0) {
+            todayCrime[incident.category]++;
+            todayTime[int.parse(incident.time.split(":")[0])]++;
+            print(todayTime);
+          }
+          if(compareDate(value['date']) == 1) {
             yesterdayCrime[incident.category]++;
             yesterdayTime[int.parse(incident.time.split(":")[0])]++;
           }
@@ -278,7 +301,7 @@ class _MyAppState extends State<MyApp> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Container(padding: EdgeInsets.all(3), child: Image.asset("img/logo.png")),
-                  Image.asset("img/logo_text.png", height: 28,),
+                  Image.asset("img/logo_text.png", height: 24,),
                 ]
               ),
               // titleTextStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 32.0),
@@ -295,11 +318,9 @@ class _MyAppState extends State<MyApp> {
                     child: Column(
                       children: [
                         Expanded(
-                          flex: 3,
-                          child: StyledContainer(widget: Container(),),
+                          child: StyledContainer(widget: StatisticContainer(todayList: todayTime,yesterdayList: sampleYesterdayTime,),),
                         ),
                         Expanded(
-                          flex: 3,
                           child: StyledContainer(widget: Container(),),
                         ),
                       ],
@@ -311,7 +332,7 @@ class _MyAppState extends State<MyApp> {
                     if (snapshot.hasData) {
                       final updatedMap = snapshot.data!;
                       return Expanded(
-                        flex: 3,
+                        flex: 2,
                         child: Stack(
                           children: [
                             MapContainer(logMap: updatedMap),
