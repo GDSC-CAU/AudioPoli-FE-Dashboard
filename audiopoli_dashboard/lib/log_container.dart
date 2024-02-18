@@ -1,3 +1,4 @@
+import 'package:audiopoli_dashboard/data_function.dart';
 import 'package:audiopoli_dashboard/sound_container.dart';
 import 'package:flutter/material.dart';
 import 'package:sticky_headers/sticky_headers.dart';
@@ -80,19 +81,19 @@ class _LogContainerState extends State<LogContainer> {
               ),
               headingRowHeight: 20,
               headingTextStyle: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 12.0
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12.0
               ),
               columnSpacing: 20,
 
               columns: const [
-                DataColumn(label: SizedBox(width: 100, child: Text('Date'))),
-                DataColumn(label: SizedBox(width: 100, child: Text('Time'))),
+                DataColumn(label: SizedBox(width: 80, child: Text('Date'))),
+                DataColumn(label: SizedBox(width: 70, child: Text('Time'))),
                 DataColumn(label: SizedBox(width: 100, child: Text('Latitude'))),
                 DataColumn(label: SizedBox(width: 100, child: Text('Longitude'))),
-                DataColumn(label: SizedBox(width: 60, child: Text('Category'))),
-                DataColumn(label: SizedBox(width: 50, child: Text('Detail'))),
-                DataColumn(label: SizedBox(width: 50, child: Text('Is Crime'))),
+                DataColumn(label: SizedBox(width: 150, child: Text('Category'))),
+                DataColumn(label: SizedBox(width: 200, child: Text('Detail'))),
+                DataColumn(label: SizedBox(width: 100, child: Text('Is Crime'))),
                 DataColumn(label: SizedBox(width: 80, child: Text('Departure'))),
                 DataColumn(label: SizedBox(width: 80, child: Text('Case End'))),
                 DataColumn(label: SizedBox(width: 300, child: Text('Sound'))),
@@ -106,31 +107,31 @@ class _LogContainerState extends State<LogContainer> {
               data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
               child: DataTable(
                 border:  const TableBorder(
-                  horizontalInside: BorderSide(
-                      width: 0.5,
-                      color: Colors.grey
-                  ),
-                  verticalInside: BorderSide(
-                    width: 0.5,
-                    color: Colors.grey
-                  ),
-                  bottom: BorderSide(
-                    width: 0.5,
-                    color: Colors.grey
-                  )
+                    horizontalInside: BorderSide(
+                        width: 0.5,
+                        color: Colors.grey
+                    ),
+                    verticalInside: BorderSide(
+                        width: 0.5,
+                        color: Colors.grey
+                    ),
+                    bottom: BorderSide(
+                        width: 0.5,
+                        color: Colors.grey
+                    )
                 ),
                 columnSpacing: 20,
                 headingRowHeight: 0,
                 dataRowMinHeight: 24,
                 dataRowMaxHeight: 24,
                 columns: [
+                  DataColumn(label: Container(width: 80,)),
+                  DataColumn(label: Container(width: 70,)),
                   DataColumn(label: Container(width: 100,)),
                   DataColumn(label: Container(width: 100,)),
+                  DataColumn(label: Container(width: 150,)),
+                  DataColumn(label: Container(width: 200,)),
                   DataColumn(label: Container(width: 100,)),
-                  DataColumn(label: Container(width: 100,)),
-                  DataColumn(label: Container(width: 60,)),
-                  DataColumn(label: Container(width: 50,)),
-                  DataColumn(label: Container(width: 50,)),
                   DataColumn(label: Container(width: 80,)),
                   DataColumn(label: Container(width: 80,)),
                   DataColumn(label: Container(width: 300,)),
@@ -148,11 +149,11 @@ class _LogContainerState extends State<LogContainer> {
                       DataCell(Text(entry.value.time ?? '')),
                       DataCell(Text(entry.value.latitude .toString())),
                       DataCell(Text(entry.value.longitude.toString())),
-                      DataCell(Text(entry.value.category.toString())),
-                      DataCell(Text(entry.value.detail.toString())),
-                      DataCell(Text(entry.value.isCrime == true ? 'Yes' : 'No')),
-                      DataCell(Text(entry.value.departureTime ?? '-')),
-                      DataCell(Text(entry.value.caseEndTime ?? '-')),
+                      DataCell(Text(DataFunction.categoryToString(entry.value.category) ?? '')),
+                      DataCell(Text(DataFunction.detailToString(entry.value.detail) ?? '')),
+                      DataCell(Text(entry.value.isCrime == -1 ? 'Checking...' : entry.value.isCrime == 0 ? 'No' : 'Yes')),
+                      DataCell(Text(entry.value.departureTime[0] == '9' ? '' : entry.value.departureTime ?? '-')),
+                      DataCell(Text(entry.value.caseEndTime[0] == '9' ? '' : entry.value.caseEndTime ?? '-')),
                       DataCell(SoundContainer(filePath: entry.value.sound,)),
                     ],
                   );

@@ -3,14 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class CategoryStatisticContainer extends StatefulWidget {
-  CategoryStatisticContainer({super.key, required this.yesterdayList, required this.todayList});
+  CategoryStatisticContainer(
+      {super.key, required this.yesterdayList, required this.todayList});
   final List<int> yesterdayList;
   final List<int> todayList;
   @override
-  State<CategoryStatisticContainer> createState() => _CategoryStatisticContainerState();
+  State<CategoryStatisticContainer> createState() =>
+      _CategoryStatisticContainerState();
 }
 
-class _CategoryStatisticContainerState extends State<CategoryStatisticContainer> {
+class _CategoryStatisticContainerState
+    extends State<CategoryStatisticContainer> {
   late List<CategoryData> yesterdayData;
   late List<CategoryData> todayData;
 
@@ -32,40 +35,61 @@ class _CategoryStatisticContainerState extends State<CategoryStatisticContainer>
 
   @override
   Widget build(BuildContext context) {
-    return SfCartesianChart(
-      primaryXAxis: CategoryAxis(
-        interval: 1,
-        edgeLabelPlacement: EdgeLabelPlacement.shift,
-        labelStyle: TextStyle(fontWeight: FontWeight.bold),
-      ),
-      primaryYAxis: NumericAxis(
-        labelFormat: '{value}',
-        interval: 1,
-      ),
-      series: <CartesianSeries>[
-        ColumnSeries<CategoryData, String>(
-          dataSource: yesterdayData,
-          xValueMapper: (CategoryData incidents, _) => DataFunction.categoryToGraph(incidents.category),
-          yValueMapper: (CategoryData incidents, _) => incidents.incidents,
-          pointColorMapper: (CategoryData incidents, _) => incidents.color.withAlpha(95),
-          name: 'Yesterday',
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Container(
+          margin: EdgeInsets.only(bottom: 5),
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+          decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 0.5, color: Colors.grey))),
+          height: 25,
+          alignment: Alignment.centerLeft,
+          child: Text(
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              'Category statistic'),
         ),
-        ColumnSeries<CategoryData, String>(
-          dataSource: todayData,
-          xValueMapper: (CategoryData incidents, _) => DataFunction.categoryToGraph(incidents.category),
-          yValueMapper: (CategoryData incidents, _) => incidents.incidents,
-          pointColorMapper: (CategoryData incidents, _) => incidents.color,
-          name: 'Today',
-        )
+        Expanded(
+          child: SfCartesianChart(
+            primaryXAxis: CategoryAxis(
+              interval: 1,
+              edgeLabelPlacement: EdgeLabelPlacement.shift,
+              labelStyle: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            primaryYAxis: NumericAxis(
+              labelFormat: '{value}',
+              interval: 1,
+            ),
+            series: <CartesianSeries>[
+              ColumnSeries<CategoryData, String>(
+                dataSource: yesterdayData,
+                xValueMapper: (CategoryData incidents, _) =>
+                    DataFunction.categoryToGraph(incidents.category),
+                yValueMapper: (CategoryData incidents, _) =>
+                    incidents.incidents,
+                pointColorMapper: (CategoryData incidents, _) =>
+                    incidents.color.withAlpha(95),
+                name: 'Yesterday',
+              ),
+              ColumnSeries<CategoryData, String>(
+                dataSource: todayData,
+                xValueMapper: (CategoryData incidents, _) =>
+                    DataFunction.categoryToGraph(incidents.category),
+                yValueMapper: (CategoryData incidents, _) =>
+                    incidents.incidents,
+                pointColorMapper: (CategoryData incidents, _) =>
+                    incidents.color,
+                name: 'Today',
+              )
+            ],
+            trackballBehavior: TrackballBehavior(
+              enable: true,
+              lineType: TrackballLineType.vertical,
+              activationMode: ActivationMode.singleTap,
+              tooltipDisplayMode: TrackballDisplayMode.groupAllPoints
+            ),
+          ),
+        ),
       ],
-      trackballBehavior: TrackballBehavior(
-        enable: true, // Trackball을 활성화
-        lineType: TrackballLineType.vertical, // 세로선으로 표시
-        activationMode: ActivationMode.singleTap, // 탭으로 활성화
-        tooltipSettings: InteractiveTooltip(
-          enable: true, // 툴팁 활성화
-        ),
-      ),
     );
   }
 }
@@ -77,7 +101,8 @@ class CategoryData {
 
   CategoryData(this.category, this.incidents, this.color);
 
-  static List<CategoryData> createCategoryDataList(List<int> yesterdayCategory) {
+  static List<CategoryData> createCategoryDataList(
+      List<int> yesterdayCategory) {
     Color _color = Colors.black;
     List<CategoryData> categoryDataList = [];
     for (int i = 1; i < yesterdayCategory.length - 1; i++) {
@@ -98,10 +123,7 @@ class CategoryData {
           _color = Colors.green;
       }
       categoryDataList.add(CategoryData(i, yesterdayCategory[i], _color));
-      print(yesterdayCategory[i]);
     }
     return categoryDataList;
   }
 }
-
-

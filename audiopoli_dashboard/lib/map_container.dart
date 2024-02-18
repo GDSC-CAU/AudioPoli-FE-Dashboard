@@ -47,10 +47,6 @@ class _MapContainerState extends State<MapContainer> {
 
   @override
   void didUpdateWidget(MapContainer oldWidget) {
-
-    if (kDebugMode) {
-      print('Update MapContainer Widget');
-    }
     super.didUpdateWidget(oldWidget);
     updateData();
     updateMarkers();

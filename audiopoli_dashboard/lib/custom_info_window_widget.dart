@@ -1,8 +1,11 @@
 import 'package:audiopoli_dashboard/sound_container.dart';
 import 'package:audiopoli_dashboard/data_function.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'custom_info_window.dart';
+import 'incident_data.dart';
 
 class CustomInfoWindowWidget extends StatefulWidget {
   const CustomInfoWindowWidget(
@@ -22,6 +25,22 @@ class _CustomInfoWindowWidgetState extends State<CustomInfoWindowWidget> {
       return 'Waiting';
     else
       return 'error';
+  }
+
+  void updateIsCrime(IncidentData data, int tf) {
+    final ref = FirebaseDatabase.instance.ref("/crime/${data.id.toString()}");
+
+    ref.update({"isCrime": tf})
+        .then((_) {
+      if (kDebugMode) {
+        print('success!');
+      }
+    })
+        .catchError((error) {
+      if (kDebugMode) {
+        print(error);
+      }
+    });
   }
 
   @override
@@ -80,27 +99,28 @@ class _CustomInfoWindowWidgetState extends State<CustomInfoWindowWidget> {
             Container(
               padding: EdgeInsets.all(10),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  OutlinedButton(
-                    onPressed: () {},
-                    child: Text('Clear'),
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5)
-                        )
-                    )
-                  ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {updateIsCrime(widget.data, 1);},
                     child: Text('Report'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                         borderRadius: BorderRadius.circular(5)
+                          borderRadius: BorderRadius.circular(5)
+                      )
+                    )
+                  ),
+                  SizedBox(width: 10,),
+                  OutlinedButton(
+                    onPressed: () {updateIsCrime(widget.data, 0);},
+                    child: Text('Clear'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5)
                       )
                     )
                   )
