@@ -23,7 +23,7 @@ class RadarAnimationState extends State<RadarAnimation> with SingleTickerProvide
 
     _animation = Tween<double>(
       begin: 50.0,
-      end: 300.0,
+      end: 350.0,
     ).animate(_controller)
       ..addListener(() {
         setState(() {});
@@ -45,10 +45,10 @@ class RadarAnimationState extends State<RadarAnimation> with SingleTickerProvide
 
   void startAnimation() async {
     _animationCount = 0;
+    await _audioPlayer.setAsset('assets/audio/siren.mp3');
     _isVisible = true;
     _controller.reset();
     _controller.forward();
-    await _audioPlayer.setAsset('assets/audio/siren.mp3');
     _audioPlayer.play();
   }
 
@@ -61,19 +61,23 @@ class RadarAnimationState extends State<RadarAnimation> with SingleTickerProvide
 
   @override
   Widget build(BuildContext context) {
+    double opacity = 1.0 - (_animation.value - 50.0) / (350.0 - 50.0);
     return Visibility(
       visible: _isVisible,
       child: Container(
         alignment: Alignment.center,
-        child: Container(
-          width: _animation.value,
-          height: _animation.value,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.redAccent.withOpacity(0.1),
-            border: Border.all(
-              color: Colors.redAccent,
-              width: 1.0,
+        child: Opacity(
+          opacity: opacity,
+          child: Container(
+            width: _animation.value,
+            height: _animation.value,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.redAccent.withOpacity(0.5),
+              border: Border.all(
+                color: Colors.redAccent,
+                width: 1.0,
+              ),
             ),
           ),
         ),

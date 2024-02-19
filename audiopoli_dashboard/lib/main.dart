@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 import 'package:audiopoli_dashboard/log_container.dart';
 import 'package:audiopoli_dashboard/incident_data.dart';
-import 'package:audiopoli_dashboard/radar_animation.dart';
 import 'package:audiopoli_dashboard/time_statistic_container.dart';
 import 'package:audiopoli_dashboard/time_container.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -16,11 +15,8 @@ import 'custom_marker_provider.dart';
 import 'firebase_options.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'map_container.dart';
+
 var now = DateTime.now();
-// "date": DateFormat('yyyy-MM-dd').format(now),
-
-// IncidentData sampleData = IncidentData(date: DateFormat('yyyy-MM-dd').format(now), time: DateFormat('kk:mm:ss').format(now), latitude: 37.5058, longitude: 126.956, sound: "대충 base64", category: 1, detail: 5, isCrime: -1, id: 35, departureTime: "", caseEndTime: "");
-
 void main() async {
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
@@ -137,31 +133,24 @@ void sendDataToDB() {
     if (kDebugMode) {
       print('success!');
     }
-    // Data saved successfully!
   })
       .catchError((error) {
     if (kDebugMode) {
       print(error);
     }
-    // The write failed…
   });
 }
 
 void deleteRecentData() {
   final DatabaseReference ref = FirebaseDatabase.instance.ref("/crime");
 
-  // 가장 최근 항목에 대한 쿼리 생성
   Query lastItemQuery = ref.orderByKey().limitToLast(1);
-
-  // 쿼리 실행 및 결과에 대한 스냅샷 가져오기
   lastItemQuery.get().then((DataSnapshot snapshot) {
     if (snapshot.exists) {
-      // 스냅샷에서 첫 번째 항목의 키 가져오기
       Map<dynamic, dynamic> children = snapshot.value as Map<dynamic, dynamic>;
       String? lastItemKey = children.keys.first;
 
       if (lastItemKey != null) {
-        // 가장 최근 항목 삭제
         ref.child(lastItemKey).remove().then((_) {
           if (kDebugMode) {
             print("가장 최근 항목이 성공적으로 삭제되었습니다.");
@@ -201,16 +190,26 @@ class _MyAppState extends State<MyApp> {
   var sampleYesterdayCrime = List<int>.filled(7, 0);
   void setSampleList() {
     sampleYesterdayTime[1] = 5;
+    sampleYesterdayTime[2] = 1;
     sampleYesterdayTime[3] = 3;
+    sampleYesterdayTime[4] = 0;
     sampleYesterdayTime[5] = 8;
-    sampleYesterdayTime[7] = 2;
+    sampleYesterdayTime[6] = 2;
+    sampleYesterdayTime[7] = 5;
+    sampleYesterdayTime[8] = 3;
     sampleYesterdayTime[9] = 7;
-    sampleYesterdayTime[11] = 1;
+    sampleYesterdayTime[10] = 5;
+    sampleYesterdayTime[11] = 3;
+    sampleYesterdayTime[12] = 4;
     sampleYesterdayTime[13] = 4;
     sampleYesterdayTime[15] = 3;
+    sampleYesterdayTime[16] = 6;
     sampleYesterdayTime[17] = 5;
+    sampleYesterdayTime[18] = 3;
     sampleYesterdayTime[19] = 2;
+    sampleYesterdayTime[20] = 3;
     sampleYesterdayTime[21] = 6;
+    sampleYesterdayTime[22] = 1;
     sampleYesterdayTime[23] = 4;
 
     sampleYesterdayCrime[1] = 3;
@@ -224,9 +223,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    // updateIsCrime(sampleData, true);
-    // updateDepartureTime(sampleData, "23:40");
-    // updateCaseEndTime(sampleData, "2:20");
     setSampleList();
     ref.onValue.listen((DatabaseEvent event) {
       loadDataFromDB(event);
@@ -326,8 +322,6 @@ class _MyAppState extends State<MyApp> {
                   Image.asset("img/logo_text.png", height: 24,),
                 ]
               ),
-              // titleTextStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 32.0),
-              // title: const Text("AUDIO POLI"),
             ),
           ),
         ),
@@ -387,8 +381,8 @@ class _MyAppState extends State<MyApp> {
                           children: [
                             MapContainer(logMap: updatedMap),
                             const Positioned(
-                              top: 10,
-                              right: 10,
+                              top: 7,
+                              right: 7,
                               child: TimeContainer()
                             )
                           ]
@@ -414,28 +408,29 @@ class _MyAppState extends State<MyApp> {
                   return Stack(
                     children: [
                       LogContainer(logMap: updatedMap),
-                      Positioned(
-                        bottom: 10,
-                        right: 10,
-                        child: IconButton(
-                          icon: const Icon(Icons.add),
-                          onPressed: () {
-                            sendDataToDB();
-                          },
-                        )
-                      ),
-                      Positioned(
-                          bottom: 10,
-                          right: 50,
-                          child: IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () {
-                              deleteRecentData();
-                            },
-                          )
-                      )
+                      // Positioned(
+                      //   bottom: 10,
+                      //   right: 10,
+                      //   child: IconButton(
+                      //     icon: const Icon(Icons.add),
+                      //     onPressed: () {
+                      //       sendDataToDB();
+                      //     },
+                      //   )
+                      // ),
+                      // Positioned(
+                      //     bottom: 10,
+                      //     right: 50,
+                      //     child: IconButton(
+                      //       icon: const Icon(Icons.delete),
+                      //       onPressed: () {
+                      //         deleteRecentData();
+                      //       },
+                      //     )
+                      // )
                     ],
                   );
+                  // return LogContainer(logMap: updatedMap);
                 } else {
                   return const Expanded(
                     flex: 1,
