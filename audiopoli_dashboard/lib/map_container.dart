@@ -92,7 +92,9 @@ class _MapContainerState extends State<MapContainer> {
             );
 
     setState(() {
-      markers.add(newMarker);
+      if(entry.caseEndTime[0] == '9') {
+        markers.add(newMarker);
+      }
     });
     _customInfoWindowController.addInfoWindow!(
       CustomInfoWindowWidget(data: entry, controller: _customInfoWindowController,),
@@ -108,14 +110,14 @@ class _MapContainerState extends State<MapContainer> {
     );
     radarKey.currentState?.startAnimation();
   }
-
-
   void updateData() {
+    Set<String> toRemove = {};
+
     setState(() {
       incidentMap.clear();
       widget.logMap.forEach((key, value) {
         IncidentData incident = IncidentData(
-            date: value.date,
+          date: value.date,
             time: value.time,
             latitude: value.latitude,
             longitude: value.longitude,
@@ -127,10 +129,41 @@ class _MapContainerState extends State<MapContainer> {
             departureTime: value.departureTime,
             caseEndTime: value.caseEndTime
         );
-        incidentMap[key] = incident;
+
+        // 조건 확인: caseEndTime의 첫 문자가 '9'가 아닌 경우
+        if (incident.caseEndTime != null && incident.caseEndTime!.startsWith('9')) {
+          incidentMap[key] = incident;
+        } else {
+          toRemove.add(key);
+        }
       });
+
+      // 삭제 대상 마커 제거
+      markers.removeWhere((marker) => toRemove.contains(marker.markerId.value));
     });
   }
+  //
+  // void updateData() {
+  //   setState(() {
+  //     incidentMap.clear();
+  //     widget.logMap.forEach((key, value) {
+  //       IncidentData incident = IncidentData(
+  //           date: value.date,
+  //           time: value.time,
+  //           latitude: value.latitude,
+  //           longitude: value.longitude,
+  //           sound: value.sound,
+  //           category: value.category,
+  //           detail: value.detail,
+  //           id: value.id,
+  //           isCrime: value.isCrime,
+  //           departureTime: value.departureTime,
+  //           caseEndTime: value.caseEndTime
+  //       );
+  //       incidentMap[key] = incident;
+  //     });
+  //   });
+  // }
 
   @override
   void dispose() {
