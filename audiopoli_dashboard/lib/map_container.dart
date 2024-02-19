@@ -96,19 +96,23 @@ class _MapContainerState extends State<MapContainer> {
         markers.add(newMarker);
       }
     });
-    _customInfoWindowController.addInfoWindow!(
-      CustomInfoWindowWidget(data: entry, controller: _customInfoWindowController,),
-      LatLng(entry.latitude, entry.longitude),
-    );
-    mapController!.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: LatLng(entry.latitude + 0.0005, entry.longitude),
-          zoom: 17.0,
+
+    if(entry.caseEndTime[0] == '9') {
+      _customInfoWindowController.addInfoWindow!(
+        CustomInfoWindowWidget(
+          data: entry, controller: _customInfoWindowController,),
+        LatLng(entry.latitude, entry.longitude),
+      );
+      mapController!.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(entry.latitude + 0.0005, entry.longitude),
+            zoom: 17.0,
+          ),
         ),
-      ),
-    );
-    radarKey.currentState?.startAnimation();
+      );
+      radarKey.currentState?.startAnimation();
+    }
   }
   void updateData() {
     Set<String> toRemove = {};
