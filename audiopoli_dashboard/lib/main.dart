@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:audiopoli_dashboard/log_container.dart';
 import 'package:audiopoli_dashboard/incident_data.dart';
+import 'package:audiopoli_dashboard/radar_animation.dart';
 import 'package:audiopoli_dashboard/time_statistic_container.dart';
 import 'package:audiopoli_dashboard/time_container.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -333,9 +334,11 @@ class _MyAppState extends State<MyApp> {
         body: Column(
           children: [
             Expanded(
+              flex: 3,
               child: Row(
                 children: [
                   Expanded(
+                    flex: 1,
                     child: Column(
                       children: [
                         Expanded(
@@ -348,7 +351,7 @@ class _MyAppState extends State<MyApp> {
                                     List<int> updatedTime = snapshot.data!;
                                     return TimeStatisticContainer(todayList: updatedTime, yesterdayList: sampleYesterdayTime);
                                   } else {
-                                    return StyledContainer(widget: CircularProgressIndicator());
+                                    return CircularProgressIndicator();
                                   }
                                 }
                             ),
@@ -364,7 +367,7 @@ class _MyAppState extends State<MyApp> {
                                     List<int> updatedCrime = snapshot.data!;
                                     return CategoryStatisticContainer(todayList: updatedCrime, yesterdayList: sampleYesterdayCrime);
                                   } else {
-                                    return StyledContainer(widget: CircularProgressIndicator());
+                                    return CircularProgressIndicator();
                                   }
                                 }
                             ),
@@ -393,6 +396,7 @@ class _MyAppState extends State<MyApp> {
                       );
                     } else {
                       return const Expanded(
+                        flex: 2,
                         child: StyledContainer(
                           widget: CircularProgressIndicator(),
                         ),
@@ -434,6 +438,7 @@ class _MyAppState extends State<MyApp> {
                   );
                 } else {
                   return const Expanded(
+                    flex: 1,
                     child: StyledContainer(
                       widget: CircularProgressIndicator(),
                     ),

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:audiopoli_dashboard/custom_info_window_widget.dart';
+import 'package:audiopoli_dashboard/radar_animation.dart';
 import 'package:audiopoli_dashboard/sound_container.dart';
 import 'package:audiopoli_dashboard/styled_container.dart';
 import './custom_info_window.dart';
@@ -50,34 +51,92 @@ class _MapContainerState extends State<MapContainer> {
     super.didUpdateWidget(oldWidget);
     updateData();
     updateMarkers();
+    print("newMarkerAdded");
   }
 
+  //
+  // Future<void> _addMarker(Set<Marker> newMarkers, dynamic entry, String markerId) async {
+  //   newMarkers.add(
+  //     Marker(
+  //       icon: MarkerProvider().getMarker(entry.detail) ?? BitmapDescriptor.defaultMarker,
+  //       markerId: MarkerId(markerId),
+  //       position: LatLng(entry.latitude, entry.longitude),
+  //       onTap: () {
+  //         _customInfoWindowController.addInfoWindow!(
+  //           CustomInfoWindowWidget(data: entry, controller: _customInfoWindowController,),
+  //           LatLng(entry.latitude, entry.longitude),
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
+  //
+  // void updateMarkers() {
+  //   Set<Marker> newMarkers = {};
+  //   widget.logMap.forEach((key, value) {
+  //     _addMarker(newMarkers, incidentMap[key], key);
+  //   });
+  //   setState(() {
+  //     markers = newMarkers;
+  //   });
+  // }
 
-  Future<void> _addMarker(Set<Marker> newMarkers, dynamic entry, String markerId) async {
-    newMarkers.add(
-      Marker(
-        icon: MarkerProvider().getMarker(entry.detail) ?? BitmapDescriptor.defaultMarker,
-        markerId: MarkerId(markerId),
-        position: LatLng(entry.latitude, entry.longitude),
-        onTap: () {
-          _customInfoWindowController.addInfoWindow!(
-            CustomInfoWindowWidget(data: entry, controller: _customInfoWindowController,),
-            LatLng(entry.latitude, entry.longitude),
-          );
-        },
+  void updateMarkers() async {
+    // 현재 markers 세트의 마커 ID 추출
+    Set<String> currentMarkerIds = markers.map((m) => m.markerId.value).toSet();
+
+    // logMap에서의 마커 ID
+    Set<String> logMapMarkerIds = widget.logMap.keys.toSet();
+
+    // 새로 추가될 마커 ID (logMap에는 있지만 현재 마커 세트에는 없는 ID)
+    Set<String> newMarkerIds = logMapMarkerIds.difference(currentMarkerIds);
+
+    // 제거될 마커 ID (현재 마커 세트에는 있지만 logMap에는 없는 ID)
+    Set<String> removedMarkerIds = currentMarkerIds.difference(logMapMarkerIds);
+
+    // 새로 추가될 마커 처리
+    for (String markerId in newMarkerIds) {
+      var newMarkerData = widget.logMap[markerId];
+      _addMarker(newMarkerData, markerId);
+    }
+
+    setState(() {
+      markers.removeWhere((m) => removedMarkerIds.contains(m.markerId.value));
+    });
+  }
+
+// _addMarker 함수는 비동기로 마커를 추가하는 로직 포함
+  Future<void> _addMarker(dynamic entry, String markerId) async {
+    // 마커 생성 로직 (markerData와 markerId를 기반으로 마커 생성)
+    final Marker newMarker =  Marker(
+              icon: MarkerProvider().getMarker(entry.detail) ?? BitmapDescriptor.defaultMarker,
+              markerId: MarkerId(markerId),
+              position: LatLng(entry.latitude, entry.longitude),
+              onTap: () {
+                _customInfoWindowController.addInfoWindow!(
+                  CustomInfoWindowWidget(data: entry, controller: _customInfoWindowController,),
+                  LatLng(entry.latitude, entry.longitude),
+                );
+              },
+            );
+
+    setState(() {
+      markers.add(newMarker);
+    });
+    _customInfoWindowController.addInfoWindow!(
+      CustomInfoWindowWidget(data: entry, controller: _customInfoWindowController,),
+      LatLng(entry.latitude, entry.longitude),
+    );
+    mapController!.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: LatLng(entry.latitude + 0.0005, entry.longitude),
+          zoom: 17.0,
+        ),
       ),
     );
   }
 
-  void updateMarkers() {
-    Set<Marker> newMarkers = {};
-    widget.logMap.forEach((key, value) {
-      _addMarker(newMarkers, incidentMap[key], key);
-    });
-    setState(() {
-      markers = newMarkers;
-    });
-  }
 
   void updateData() {
     setState(() {
@@ -139,6 +198,10 @@ class _MapContainerState extends State<MapContainer> {
                   },
                   markers: markers,
                 ),
+                Center(child: Padding(
+                  padding: const EdgeInsets.only(top:100.0),
+                  child: RadarAnimation(),
+                )),
                 CustomInfoWindow(
                   controller: _customInfoWindowController,
                   height: 140,
