@@ -3,6 +3,7 @@ import 'package:audiopoli_dashboard/custom_info_window_widget.dart';
 import 'package:audiopoli_dashboard/radar_animation.dart';
 import 'package:audiopoli_dashboard/sound_container.dart';
 import 'package:audiopoli_dashboard/styled_container.dart';
+import 'package:collection/collection.dart';
 import './custom_info_window.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,8 @@ class _MapContainerState extends State<MapContainer> {
 
   GoogleMapsFlutterPlatform mapsImplementation = GoogleMapsFlutterPlatform.instance =  google_map_flutter.GoogleMapsPlugin();
   final CustomInfoWindowController _customInfoWindowController = CustomInfoWindowController();
+  final GlobalKey<RadarAnimationState> radarKey = GlobalKey<RadarAnimationState>();
+
 
   final LatLng _center = const LatLng(37.5058, 126.956);
 
@@ -53,7 +56,7 @@ class _MapContainerState extends State<MapContainer> {
     updateMarkers();
     print("newMarkerAdded");
   }
-
+  //
   //
   // Future<void> _addMarker(Set<Marker> newMarkers, dynamic entry, String markerId) async {
   //   newMarkers.add(
@@ -70,7 +73,7 @@ class _MapContainerState extends State<MapContainer> {
   //     ),
   //   );
   // }
-  //
+
   // void updateMarkers() {
   //   Set<Marker> newMarkers = {};
   //   widget.logMap.forEach((key, value) {
@@ -135,6 +138,7 @@ class _MapContainerState extends State<MapContainer> {
         ),
       ),
     );
+    radarKey.currentState?.startAnimation();
   }
 
 
@@ -159,6 +163,103 @@ class _MapContainerState extends State<MapContainer> {
       });
     });
   }
+
+
+  // ㅓㄹㄴ아;ㅣ러;미ㅏㄹㄴ허;ㅣㅁㅇ
+  // void updateExistingMarker(String id, IncidentData entry) {
+  //   Marker? existingMarker = markers.firstWhereOrNull((marker) => marker.markerId.value == id);
+  //   if (existingMarker != null) {
+  //     final updatedMarker = Marker(
+  //       icon: MarkerProvider().getMarker(entry.detail) ?? BitmapDescriptor.defaultMarker,
+  //       markerId: MarkerId(id),
+  //       position: LatLng(entry.latitude, entry.longitude),
+  //       onTap: () {
+  //         _customInfoWindowController.addInfoWindow!(
+  //           CustomInfoWindowWidget(data: entry, controller: _customInfoWindowController,),
+  //           LatLng(entry.latitude, entry.longitude),
+  //         );
+  //       },
+  //     );
+  //
+  //     setState(() {
+  //       markers.remove(existingMarker);
+  //       markers.add(updatedMarker);
+  //     });
+  //   }
+  // }
+  //
+  // Future<void> addNewMarkerAndShowInfoWindow(String id, IncidentData entry) async {
+  //   final Marker newMarker = Marker(
+  //     icon: MarkerProvider().getMarker(entry.detail) ??
+  //         BitmapDescriptor.defaultMarker,
+  //     markerId: MarkerId(id),
+  //     position: LatLng(entry.latitude, entry.longitude),
+  //     onTap: () {
+  //       _customInfoWindowController.addInfoWindow!(
+  //         CustomInfoWindowWidget(
+  //           data: entry, controller: _customInfoWindowController,),
+  //         LatLng(entry.latitude, entry.longitude),
+  //       );
+  //     },
+  //   );
+  //
+  //   setState(() {
+  //     markers.add(newMarker);
+  //
+  //   });
+  //
+  // }
+  //
+  // void updateData() {
+  //   Set<String> currentMarkerIds = markers.map((m) => m.markerId.value).toSet();
+  //   var isNew = false;
+  //   var newData;
+  //   setState(() {
+  //     incidentMap.clear();
+  //     widget.logMap.forEach((key, value) {
+  //       IncidentData incident = IncidentData(
+  //           date: value.date,
+  //           time: value.time,
+  //           latitude: value.latitude,
+  //           longitude: value.longitude,
+  //           sound: value.sound,
+  //           category: value.category,
+  //           detail: value.detail,
+  //           id: value.id,
+  //           isCrime: value.isCrime,
+  //           departureTime: value.departureTime,
+  //           caseEndTime: value.caseEndTime
+  //       );
+  //       incidentMap[key] = incident;
+  //
+  //       if (currentMarkerIds.contains(key)) {
+  //         // 기존 마커 업데이트
+  //         updateExistingMarker(key, incidentMap[key]);
+  //       } else {
+  //         addNewMarkerAndShowInfoWindow(key, incidentMap[key]);
+  //         isNew = true;
+  //         newData = incidentMap[key];
+  //       }
+  //     });
+  //   });
+  //   if(isNew) {
+  //     _customInfoWindowController.addInfoWindow!(
+  //       CustomInfoWindowWidget(
+  //         data: newData, controller: _customInfoWindowController,),
+  //       LatLng(newData.latitude, newData.longitude),
+  //     );
+  //     mapController.animateCamera(
+  //       CameraUpdate.newCameraPosition(
+  //         CameraPosition(
+  //           target: LatLng(newData.latitude + 0.0005, newData.longitude),
+  //           zoom: 17.0,
+  //         ),
+  //       ),
+  //     );
+  //   }
+  //
+  // }
+  //ㅓ아ㅣㄹ;ㅓㅁㅇ나ㅣ러;ㅣ만허ㅏㅁ;ㅇㄹㅎ
 
   @override
   void dispose() {
@@ -200,7 +301,7 @@ class _MapContainerState extends State<MapContainer> {
                 ),
                 Center(child: Padding(
                   padding: const EdgeInsets.only(top:100.0),
-                  child: RadarAnimation(),
+                  child: RadarAnimation(key: radarKey),
                 )),
                 CustomInfoWindow(
                   controller: _customInfoWindowController,
