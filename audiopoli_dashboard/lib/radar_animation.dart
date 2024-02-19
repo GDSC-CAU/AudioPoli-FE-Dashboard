@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
 class RadarAnimation extends StatefulWidget {
   RadarAnimation({Key? key}) : super(key: key);
 
@@ -8,8 +9,9 @@ class RadarAnimation extends StatefulWidget {
 class RadarAnimationState extends State<RadarAnimation> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
-  int _animationCount = 0; // 애니메이션 실행 횟수를 추적
-  bool _isVisible = false; // 위젯의 가시성을 제어
+  final AudioPlayer _audioPlayer = AudioPlayer();
+  int _animationCount = 0;
+  bool _isVisible = false;
 
   @override
   void initState() {
@@ -29,9 +31,9 @@ class RadarAnimationState extends State<RadarAnimation> with SingleTickerProvide
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
           _animationCount++;
-          if (_animationCount >= 2) { // 두 번 실행 후
+          if (_animationCount >= 5) {
             setState(() {
-              _isVisible = false; // 위젯 숨김
+              _isVisible = false;
             });
           } else {
             _controller.reset();
@@ -41,23 +43,26 @@ class RadarAnimationState extends State<RadarAnimation> with SingleTickerProvide
       });
   }
 
-  void startAnimation() {
-    _animationCount = 0; // 애니메이션 횟수 초기화
-    _isVisible = true; // 애니메이션 시작 시 위젯 보이게 설정
+  void startAnimation() async {
+    _animationCount = 0;
+    _isVisible = true;
     _controller.reset();
     _controller.forward();
+    await _audioPlayer.setAsset('assets/audio/siren.mp3');
+    _audioPlayer.play();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _audioPlayer.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Visibility(
-      visible: _isVisible, // Visibility 위젯을 사용하여 가시성 제어
+      visible: _isVisible,
       child: Container(
         alignment: Alignment.center,
         child: Container(
@@ -68,7 +73,7 @@ class RadarAnimationState extends State<RadarAnimation> with SingleTickerProvide
             color: Colors.redAccent.withOpacity(0.1),
             border: Border.all(
               color: Colors.redAccent,
-              width: 3.0,
+              width: 1.0,
             ),
           ),
         ),

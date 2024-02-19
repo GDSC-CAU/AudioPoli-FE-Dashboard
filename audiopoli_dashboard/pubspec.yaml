@@ -72,6 +72,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/audio/sample_audio.wav
+    - assets/audio/siren.mp3
     - assets/img/
 
   # To add assets to your application, add an assets section, like this:
