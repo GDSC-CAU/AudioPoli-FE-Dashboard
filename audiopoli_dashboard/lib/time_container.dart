@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 class TimeContainer extends StatefulWidget {
   const TimeContainer({super.key});
+
   @override
   State<TimeContainer> createState() => _TimeContainerState();
 }
@@ -31,12 +32,15 @@ class _TimeContainerState extends State<TimeContainer> {
 
   @override
   void dispose() {
-    timer.cancel(); // 위젯이 해제될 때 타이머 취소
+    timer.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double textSize = screenWidth * 0.02;
+
     return Container(
       margin: const EdgeInsets.all(5.0),
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
@@ -52,9 +56,12 @@ class _TimeContainerState extends State<TimeContainer> {
           ),
         ],
       ),
-      child: Text(
-        timeStr,
-        style: const TextStyle(fontSize: 28, color: Colors.black, fontWeight: FontWeight.bold),
+      child: FittedBox(
+        fit: BoxFit.fitWidth,
+        child: Text(
+          timeStr,
+          style: TextStyle(fontSize: textSize, color: Colors.black, fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }

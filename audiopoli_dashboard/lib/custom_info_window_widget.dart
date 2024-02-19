@@ -21,23 +21,23 @@ class CustomInfoWindowWidget extends StatefulWidget {
 
 class _CustomInfoWindowWidgetState extends State<CustomInfoWindowWidget> {
 
-  String setCaseStatus() {
-    if (widget.data.isCrime == -1) {
-      return 'Verification Needed';
-    } else if (widget.data.isCrime == 0) {
-      return 'Not a Crime';
-    } else {
-      if(widget.data.departureTime[0] == '9') {
-        return 'Awaiting Departure';
-      } else {
-        if(widget.data.caseEndTime[0] == '9') {
-          return 'Departed';
-        } else {
-          return 'Case Closed';
-        }
-      }
-    }
-  }
+  // String setCaseStatus() {
+  //   if (widget.data.isCrime == -1) {
+  //     return 'Verification Needed';
+  //   } else if (widget.data.isCrime == 0) {
+  //     return 'Not a Crime';
+  //   } else {
+  //     if(widget.data.departureTime[0] == '9') {
+  //       return 'Awaiting Departure';
+  //     } else {
+  //       if(widget.data.caseEndTime[0] == '9') {
+  //         return 'Departed';
+  //       } else {
+  //         return 'Case Closed';
+  //       }
+  //     }
+  //   }
+  // }
 
 
   void updateIsCrime(IncidentData data, int tf) {
@@ -102,17 +102,17 @@ class _CustomInfoWindowWidgetState extends State<CustomInfoWindowWidget> {
                     ],
                   ),
                 ),
-                SoundContainer(filePath: widget.data.sound,),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.only(left: 10),
-                  child: Text(
-                      style: TextStyle(
-                        fontSize: 12,
-                      ),
-                      'Status: ' + setCaseStatus()
-                  ),
-                ),
+                Container(margin: EdgeInsets.symmetric(horizontal: 5), child: SoundContainer(filePath: widget.data.sound,)),
+                // Container(
+                //   alignment: Alignment.centerLeft,
+                //   padding: EdgeInsets.only(left: 10),
+                //   child: Text(
+                //       style: TextStyle(
+                //         fontSize: 12,
+                //       ),
+                //       'Status: ' + setCaseStatus()
+                //   ),
+                // ),
                 Container(
                   padding: EdgeInsets.all(10),
                   child: Row(
