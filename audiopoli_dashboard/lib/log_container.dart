@@ -96,7 +96,7 @@ class _LogContainerState extends State<LogContainer> {
                 DataColumn(label: SizedBox(width: 100, child: Text('Is Crime'))),
                 DataColumn(label: SizedBox(width: 80, child: Text('Departure'))),
                 DataColumn(label: SizedBox(width: 80, child: Text('Case End'))),
-                DataColumn(label: SizedBox(width: 300, child: Text('Sound'))),
+                DataColumn(label: SizedBox(width: 210, child: Text('Sound'))),
               ],
               rows: const [],
             ),
@@ -134,7 +134,7 @@ class _LogContainerState extends State<LogContainer> {
                   DataColumn(label: Container(width: 100,)),
                   DataColumn(label: Container(width: 80,)),
                   DataColumn(label: Container(width: 80,)),
-                  DataColumn(label: Container(width: 300,)),
+                  DataColumn(label: Container(width: 210,)),
                 ],
                 rows: incidentMap.entries.map((entry) {
                   return DataRow(
