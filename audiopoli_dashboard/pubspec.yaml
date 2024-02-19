@@ -47,6 +47,7 @@ dependencies:
   universal_html: ^2.2.4
   firebase_storage: ^11.6.5
   syncfusion_flutter_charts: ^24.2.6
+  collection: ^1.18.0
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +72,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/audio/sample_audio.wav
+    - assets/audio/siren.mp3
     - assets/img/
 
   # To add assets to your application, add an assets section, like this:

@@ -73,7 +73,7 @@ class _SoundContainerState extends State<SoundContainer> {
   @override
   Widget build(BuildContext context) {
     return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           IconButton(
             icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
@@ -81,7 +81,7 @@ class _SoundContainerState extends State<SoundContainer> {
             onPressed: () => togglePlayPause(),
             padding: EdgeInsets.zero,
           ),
-          Flexible(
+          Expanded(
             child: SliderTheme(
               data: SliderTheme.of(context).copyWith(
                 thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5.0),
