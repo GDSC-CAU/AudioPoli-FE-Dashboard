@@ -119,7 +119,8 @@ class _CustomInfoWindowWidgetState extends State<CustomInfoWindowWidget> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
-                        onPressed: () {updateIsCrime(widget.data, 1);},
+                        onPressed: () {updateIsCrime(widget.data, 1);
+                        widget.controller.hideInfoWindow!();},
                         child: Text('Report'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
@@ -131,7 +132,8 @@ class _CustomInfoWindowWidgetState extends State<CustomInfoWindowWidget> {
                       ),
                       SizedBox(width: 10,),
                       OutlinedButton(
-                        onPressed: () {updateIsCrime(widget.data, 0);},
+                        onPressed: () {updateIsCrime(widget.data, 0);
+                        widget.controller.hideInfoWindow!();},
                         child: Text('Clear'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,

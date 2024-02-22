@@ -55,8 +55,8 @@ class _TimeStatisticContainerState extends State<TimeStatisticContainer> {
             ),
             series: <CartesianSeries>[
               AreaSeries<TimeData, String>(
-                borderColor: Colors.deepPurpleAccent.withOpacity(0.3),
-                color: Colors.deepPurpleAccent.withOpacity(0.3),
+                borderColor: Colors.deepPurpleAccent.withOpacity(0.1),
+                color: Colors.deepPurpleAccent.withOpacity(0.1),
                 dataSource: yesterdayData,
                 xValueMapper: (TimeData incidents, _) => incidents.hour,
                 yValueMapper: (TimeData incidents, _) => incidents.incidents,
