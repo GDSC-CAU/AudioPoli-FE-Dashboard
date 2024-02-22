@@ -73,11 +73,7 @@ This approach overcomes the limitations of traditional surveillance systems and 
 4. **Notifications are sent**
     1. If the operator confirms that the incident is serious, the system proceeds to the next critical step: alert dissemination.
     2. Notify police officers: The system automatically notifies the nearest police station or relevant emergency services. The officer will receive details such as the nature of the incident, location, etc. Officers can use a dedicated application to indicate the time of dispatch and incident resolution and provide real-time updates to the system.
-    3. Public notification: At the same time, an alert is sent to the general user application to notify nearby residents or individuals of the ongoing situation. These alerts can help raise 
-
-
-
- and caution to prevent further escalation or damage.
+    3. Public notification: At the same time, an alert is sent to the general user application to notify nearby residents or individuals of the ongoing situation. These alerts can help raise and caution to prevent further escalation or damage.
 
 ## 🌐 UN-SDGs
 
