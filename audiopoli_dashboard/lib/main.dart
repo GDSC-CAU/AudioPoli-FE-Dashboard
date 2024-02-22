@@ -212,11 +212,11 @@ class _MyAppState extends State<MyApp> {
     sampleYesterdayTime[22] = 1;
     sampleYesterdayTime[23] = 4;
 
-    sampleYesterdayCrime[1] = 3;
+    sampleYesterdayCrime[1] = 5;
     sampleYesterdayCrime[2] = 2;
-    sampleYesterdayCrime[3] = 1;
-    sampleYesterdayCrime[4] = 5;
-    sampleYesterdayCrime[5] = 4;
+    sampleYesterdayCrime[3] = 7;
+    sampleYesterdayCrime[4] = 4;
+    sampleYesterdayCrime[5] = 1;
 
   }
 
@@ -408,26 +408,26 @@ class _MyAppState extends State<MyApp> {
                   return Stack(
                     children: [
                       LogContainer(logMap: updatedMap),
-                      // Positioned(
-                      //   bottom: 10,
-                      //   right: 10,
-                      //   child: IconButton(
-                      //     icon: const Icon(Icons.add),
-                      //     onPressed: () {
-                      //       sendDataToDB();
-                      //     },
-                      //   )
-                      // ),
-                      // Positioned(
-                      //     bottom: 10,
-                      //     right: 50,
-                      //     child: IconButton(
-                      //       icon: const Icon(Icons.delete),
-                      //       onPressed: () {
-                      //         deleteRecentData();
-                      //       },
-                      //     )
-                      // )
+                      Positioned(
+                        bottom: 10,
+                        right: 10,
+                        child: IconButton(
+                          icon: const Icon(Icons.add),
+                          onPressed: () {
+                            sendDataToDB();
+                          },
+                        )
+                      ),
+                      Positioned(
+                          bottom: 10,
+                          right: 50,
+                          child: IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () {
+                              deleteRecentData();
+                            },
+                          )
+                      )
                     ],
                   );
                   // return LogContainer(logMap: updatedMap);
