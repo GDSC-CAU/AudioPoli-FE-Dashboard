@@ -409,26 +409,26 @@ class _MyAppState extends State<MyApp> {
                   return Stack(
                     children: [
                       LogContainer(logMap: updatedMap),
-                      Positioned(
-                        bottom: 10,
-                        right: 10,
-                        child: IconButton(
-                          icon: const Icon(Icons.add),
-                          onPressed: () {
-                            sendDataToDB();
-                          },
-                        )
-                      ),
-                      Positioned(
-                          bottom: 10,
-                          right: 50,
-                          child: IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () {
-                              deleteRecentData();
-                            },
-                          )
-                      )
+                      // Positioned(
+                      //   bottom: 10,
+                      //   right: 10,
+                      //   child: IconButton(
+                      //     icon: const Icon(Icons.add),
+                      //     onPressed: () {
+                      //       sendDataToDB();
+                      //     },
+                      //   )
+                      // ),
+                      // Positioned(
+                      //     bottom: 10,
+                      //     right: 50,
+                      //     child: IconButton(
+                      //       icon: const Icon(Icons.delete),
+                      //       onPressed: () {
+                      //         deleteRecentData();
+                      //       },
+                      //     )
+                      // )
                     ],
                   );
                   // return LogContainer(logMap: updatedMap);
