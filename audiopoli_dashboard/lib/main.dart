@@ -18,7 +18,8 @@ import 'map_container.dart';
 
 var now = DateTime.now();
 void main() async {
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: "assets/.env");
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
   await MarkerProvider().loadCustomMarker();
   runApp(const MyApp());
@@ -318,8 +319,8 @@ class _MyAppState extends State<MyApp> {
               leading: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Container(padding: EdgeInsets.all(3), child: Image.asset("img/logo.png")),
-                  Image.asset("img/logo_text.png", height: 24,),
+                  Container(padding: EdgeInsets.all(3), child: Image.asset("assets/img/logo.png")),
+                  Image.asset("assets/img/logo_text.png", height: 24,),
                 ]
               ),
             ),
