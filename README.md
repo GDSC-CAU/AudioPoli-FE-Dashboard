@@ -17,13 +17,21 @@
 
 
 
-
+![youtube.png](docs/youtube.png)
 
 
 
 
 
 **[Video: Audio Poli - GDSC Solution Challenge 2024](https://youtu.be/Q8JWalCFGrE?feature=shared)**
+---
+## 🖥️ Dashboard Web
+
+![dashboard.png](docs/dashboard.png)
+
+**[AUDIO POLI DASHBOARD LINK](https://audiopoli.dev)**
+
+---
 
 ## 🤔 The Problem We Faced
 
